@@ -1,3 +1,15 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
-@import 'tailwindcss/utilities'
+@import 'tailwindcss/utilities';
+
+body {
+  @apply bg-ctp-base text-ctp-text;
+}
+
+a {
+    @apply text-ctp-yellow;
+}
+
+a:hover {
+    text-decoration: underline;
+}
