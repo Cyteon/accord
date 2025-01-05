@@ -34,7 +34,7 @@ export async function POST({ request }) {
     crypto.getRandomValues(bytes);
     const token = btoa(String.fromCharCode(...bytes));
 
-    const newToken = new Token({ userId: user.userId, token });
+    const newToken = new Token({ userId: user._id, token });
     await newToken.save();
 
     return Response.json(

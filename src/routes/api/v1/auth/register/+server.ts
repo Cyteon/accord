@@ -1,6 +1,5 @@
 import User from "$lib/models/User";
 import Token from "$lib/models/Token";
-import { typeid } from "typeid-js";
 import bcrypt from "bcrypt";
 
 export async function POST({ request }) {
@@ -19,7 +18,6 @@ export async function POST({ request }) {
     const hash = await bcrypt.hash(password, 12);
 
     const user = new User({ 
-        userId: typeid("user"),
         email,
         displayName,
         username,
@@ -32,7 +30,7 @@ export async function POST({ request }) {
     crypto.getRandomValues(bytes);
     const token = btoa(String.fromCharCode(...bytes));
 
-    const newToken = new Token({ userId: user.userId, token });
+    const newToken = new Token({ userId: user._id, token });
     await newToken.save();
 
     const userNoPswd = user.toJSON();

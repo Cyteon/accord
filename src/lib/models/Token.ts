@@ -1,13 +1,14 @@
 import mongoose from "mongoose";
 
 export interface TokenType {
-    userId: string;
+    userId: mongoose.Types.ObjectId;
     token: string;
 }
 
 const TokenSchema = new mongoose.Schema<TokenType>({
     userId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
         required: true,
     },
     token: {

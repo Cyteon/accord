@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 export interface UserType {
-    userId: string;
     email: string;
     displayName: string;
     username: string;
@@ -9,11 +8,6 @@ export interface UserType {
 }
 
 const UserSchema = new mongoose.Schema<UserType>({
-    userId: {
-        type: String,
-        required: true,
-        unique: true,
-    },
     email: {
         type: String,
         required: true,

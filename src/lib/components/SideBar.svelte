@@ -1,5 +1,7 @@
 <script lang="ts">
     import { Home, Cog } from "lucide-svelte";
+
+    let showCreatePlaceModal = false;
 </script>
 
 <nav class="bg-ctp-crust p-2 flex flex-col">
@@ -17,7 +19,7 @@
 </nav>
 
 <style>
-    a {
+    a, button {
         display: flex;
         padding: 0.5rem;
         border-radius: 0.5rem;

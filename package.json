@@ -26,7 +26,6 @@
 		"bcrypt": "^5.1.1",
 		"lucide-svelte": "^0.469.0",
 		"mongoose": "^8.9.3",
-		"typeid-js": "^1.1.0",
 		"typescript-cookie": "^1.0.6"
 	}
 }
