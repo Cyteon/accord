@@ -56,8 +56,6 @@
 
     <span class="mx-1 mt-2 bg-ctp-base h-1 rounded-md"></span>
 
-    <!-- list guilds here -->
-
     {#each state.places as place}
         <div class="group flex relative peer">
             <a class="unique" href={`/app/place/${place._id}`} aria-label={place.name}>
