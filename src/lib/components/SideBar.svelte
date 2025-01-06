@@ -1,7 +1,52 @@
 <script lang="ts">
-    import { Home, Cog } from "lucide-svelte";
+    import { Home, Cog, Plus } from "lucide-svelte";
+    import state from "$lib/state.svelte"; 
+    import { getCookie } from "typescript-cookie";
 
     let showCreatePlaceModal = false;
+    let placeName = "";
+    let inviteCode = "";
+    let joinPlaceError = "";
+
+    async function createPlace() {
+        const res = await fetch("/api/v1/places", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${getCookie("token")}`,
+            },
+            body: JSON.stringify({ name: placeName }),
+        });
+
+        if (res.ok) {
+            showCreatePlaceModal = false;
+            placeName = "";
+
+            state.places.push(await res.json());
+        }
+    }
+
+    async function joinPlace() {
+        joinPlaceError = "";
+
+        const res = await fetch(`/api/v1/invites/${inviteCode}/accept`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${getCookie("token")}`,
+            },
+        });
+
+        if (res.ok) {
+            state.places.push(await res.json());
+        } else {
+            joinPlaceError = await res.text();
+
+            if (joinPlaceError.length > 100) {
+                joinPlaceError = "An error occurred while joining the place.";
+            }
+        }
+    }
 </script>
 
 <nav class="bg-ctp-crust p-2 flex flex-col">
@@ -11,6 +56,22 @@
 
     <span class="mx-1 mt-2 bg-ctp-base h-1 rounded-md"></span>
 
+    <!-- list guilds here -->
+
+    {#each state.places as place}
+        <div class="group flex relative peer">
+            <a class="unique" href={`/app/place/${place._id}`} aria-label={place.name}>
+                <img src={place.iconUrl} alt="server-icon" class="rounded-md w-16 h-16 mt-2" />
+            </a>
+
+            <p class="group-hover:flex hidden absolute left-full top-6 transform font-bold text-lg ml-4 bg-ctp-crust py-1 px-4 border border-ctp-surface0 rounded-md">{place.name}</p>
+        </div>
+    {/each}
+
+    <button on:click={() => showCreatePlaceModal = true} class="my-2 text-ctp-yellow">
+        <Plus class="w-12 h-12" />
+    </button>
+
     <span class="mx-1 mb-2 mt-auto bg-ctp-base h-1 rounded-md"></span>
 
     <a href="/app/settings">
@@ -18,13 +79,37 @@
     </a>
 </nav>
 
+{#if showCreatePlaceModal}
+    <div class="absolute w-full h-screen bg-ctp-mantle/50 flex" on:click={() => showCreatePlaceModal = false}>
+        <div class="bg-ctp-mantle m-auto p-6 rounded-md border border-ctp-surface0" on:click={e => e.stopPropagation()}>
+            <h1 class="text-4xl font-bold">Create a new place</h1>
+            <input type="text" placeholder="Place name" class="w-full p-2 my-4 bg-ctp-crust border border-ctp-surface0 rounded-md text-lg" bind:value={placeName} />
+            <button on:click={createPlace} class="unique w-full mt-2 bg-ctp-yellow text-ctp-crust rounded-md p-2 text-lg">Create</button>
+
+            <div class="flex mt-2 mb-1">
+                <hr class="flex-1 my-auto border-2 border-ctp-surface0" />
+                <h1 class="mx-2 text-ctp-subtext1 text-lg">or</h1>
+                <hr class="flex-1 my-auto border-2 border-ctp-surface0" />
+            </div>
+
+            <h1 class="text-4xl font-bold">Join a place</h1>
+            <input type="text" placeholder="Invite Code" class="w-full p-2 my-4 bg-ctp-crust border border-ctp-surface0 rounded-md text-lg" bind:value={inviteCode} />
+            <button on:click={joinPlace} class="unique w-full mt-2 bg-ctp-yellow text-ctp-crust rounded-md p-2 text-lg">Join</button>
+        </div>
+    </div>
+{/if}
+
 <style>
-    a, button {
+    a:not(.unique), button:not(.unique) {
         display: flex;
         padding: 0.5rem;
         border-radius: 0.5rem;
         transition: all 300ms;
 
         @apply bg-ctp-mantle hover:text-ctp-blue;
+    }
+
+    input:focus  {
+        outline: none;
     }
 </style>

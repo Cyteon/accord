@@ -20,6 +20,7 @@
 				const data = await res.json();
 
 				state.user = data.user;
+				state.places = data.places;
 			} else {
 				if (window.location.pathname === '/app') {
 					window.location.href = '/login';
