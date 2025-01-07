@@ -9,7 +9,7 @@
 <div class="flex h-screen w-full">
     <SideBar />
 
-    <div class="p-2 bg-ctp-mantle">
+    <div class="p-2 bg-ctp-mantle border-r">
         <button 
             class={`change-view-btn ${currentView === "friends" ? "bg-ctp-surface0/25" : "hover:bg-ctp-surface0/20"}`}
             on:click={() => currentView = "friends"}
@@ -20,28 +20,26 @@
     </div>
 
     {#if currentView === "friends"}
-        <div class="w-full">
-            <div class="bg-ctp-mantle w-full p-2 flex">
-                <button 
-                    class={`change-view-btn-sm ${currentFriendView === "online" ? "bg-ctp-surface0/25" : "hover:bg-ctp-surface0/20"}`}
-                    on:click={() => currentFriendView = "online"}
-                >Online</button>
+        <div class="bg-ctp-mantle w-full h-fit border-b p-2 flex">
+            <button 
+                class={`change-view-btn-sm ${currentFriendView === "online" ? "bg-ctp-surface0/25" : "hover:bg-ctp-surface0/20"}`}
+                on:click={() => currentFriendView = "online"}
+            >Online</button>
 
-                <button 
-                    class={`change-view-btn-sm ml-2 ${currentFriendView === "all" ? "bg-ctp-surface0/25" : "hover:bg-ctp-surface0/20"}`}
-                    on:click={() => currentFriendView = "all"}
-                >All</button>
+            <button 
+                class={`change-view-btn-sm ml-2 ${currentFriendView === "all" ? "bg-ctp-surface0/25" : "hover:bg-ctp-surface0/20"}`}
+                on:click={() => currentFriendView = "all"}
+            >All</button>
 
-                <button 
-                    class={`change-view-btn-sm ml-2 ${currentFriendView === "pending" ? "bg-ctp-surface0/25" : "hover:bg-ctp-surface0/20"}`}
-                    on:click={() => currentFriendView = "pending"}
-                >Pending</button>
+            <button 
+                class={`change-view-btn-sm ml-2 ${currentFriendView === "pending" ? "bg-ctp-surface0/25" : "hover:bg-ctp-surface0/20"}`}
+                on:click={() => currentFriendView = "pending"}
+            >Pending</button>
 
-                <button 
-                    class={`change-view-btn-sm text-ctp-green ml-2 ${currentFriendView === "add" ? "bg-ctp-surface0/25" : "hover:bg-ctp-surface0/20"}`}
-                    on:click={() => currentFriendView = "add"}
-                >Add Friend</button>
-            </div>
+            <button 
+                class={`change-view-btn-sm text-ctp-green ml-2 ${currentFriendView === "add" ? "bg-ctp-surface0/25" : "hover:bg-ctp-surface0/20"}`}
+                on:click={() => currentFriendView = "add"}
+            >Add Friend</button>
         </div>
     {/if}
 </div>

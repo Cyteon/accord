@@ -22,7 +22,9 @@
             showCreatePlaceModal = false;
             placeName = "";
 
-            state.places.push(await res.json());
+            const json = await res.json();
+
+            state.places[json._id] = json;
         }
     }
 
@@ -38,7 +40,9 @@
         });
 
         if (res.ok) {
-            state.places.push(await res.json());
+            const json = await res.json();
+
+            state.places[json._id] = json;
         } else {
             joinPlaceError = await res.text();
 
@@ -51,12 +55,12 @@
 
 <nav class="bg-ctp-crust p-2 flex flex-col">
     <a href="/app">
-        <Home class="w-12 h-12" />
+        <Home class="size-full" />
     </a>
 
     <span class="mx-1 mt-2 bg-ctp-base h-1 rounded-md"></span>
 
-    {#each state.places as place}
+    {#each Object.values(state.places) as place}
         <div class="group flex relative peer">
             <a class="unique" href={`/app/place/${place._id}`} aria-label={place.name}>
                 <img src={place.iconUrl} alt="server-icon" class="rounded-md w-16 h-16 mt-2" />
@@ -67,13 +71,13 @@
     {/each}
 
     <button on:click={() => showCreatePlaceModal = true} class="my-2 text-ctp-yellow">
-        <Plus class="w-12 h-12" />
+        <Plus class="size-full" />
     </button>
 
     <span class="mx-1 mb-2 mt-auto bg-ctp-base h-1 rounded-md"></span>
 
     <a href="/app/settings">
-        <Cog class="w-12 h-12" />
+        <Cog class="size-full" />
     </a>
 </nav>
 
@@ -100,14 +104,12 @@
 <style>
     a:not(.unique), button:not(.unique) {
         display: flex;
-        padding: 0.5rem;
+        padding: .8rem;
         border-radius: 0.5rem;
         transition: all 300ms;
+        width: 4rem;
+        height: 4rem;
 
         @apply bg-ctp-mantle hover:text-ctp-blue;
-    }
-
-    input:focus  {
-        outline: none;
     }
 </style>

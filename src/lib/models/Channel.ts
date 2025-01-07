@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 export interface ChannelType {
+    _id: mongoose.Types.ObjectId;
     placeId: mongoose.Types.ObjectId;
     name: string;
 }

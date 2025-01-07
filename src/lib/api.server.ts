@@ -1,7 +1,8 @@
 import Token from "./models/Token";
-import { UserType } from "./models/User";
+import type { UserType } from "./models/User";
+import mongoose from "mongoose";
 
-export async function verifyRequest(request: Request): Promise<UserType | null> {
+export async function verifyRequest(request: Request): Promise<UserType & mongoose.Document | null> {
     const authorization = request.headers.get("Authorization");
 
     if (!authorization || !authorization.startsWith("Bearer ")) {

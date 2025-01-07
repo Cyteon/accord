@@ -13,3 +13,11 @@ a:not(.unique) {
 a:hover:not(.unique) {
     text-decoration: underline;
 }
+
+* {
+  @apply border-ctp-surface0;
+}
+
+input:focus  {
+  outline: none;
+}

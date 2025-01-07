@@ -1,10 +1,12 @@
 import mongoose from "mongoose";
 
 export interface UserType {
+    _id: mongoose.Types.ObjectId;
     email: string;
     displayName: string;
     username: string;
     password: string;
+    pfpUrl?: string;
 }
 
 const UserSchema = new mongoose.Schema<UserType>({
@@ -13,18 +15,26 @@ const UserSchema = new mongoose.Schema<UserType>({
         required: true,
         unique: true,
     },
+    
     displayName: {
         type: String,
         required: true,
     },
+
     username: {
         type: String,
         required: true,
         unique: true,
     },
+
     password: {
         type: String,
         required: true,
+    },
+
+    pfpUrl: {
+        type: String,
+        default: "https://placehold.co/200",
     },
 });
 

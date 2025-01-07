@@ -3,6 +3,7 @@
 	import { getCookie } from 'typescript-cookie';
 	import state from '$lib/state.svelte';
 	import { onMount } from 'svelte';
+  	import type { PlaceType } from '$lib/models/Place';
 
 	let { children } = $props();
 
@@ -20,7 +21,10 @@
 				const data = await res.json();
 
 				state.user = data.user;
-				state.places = data.places;
+				
+				data.places.map((place: PlaceType) => {
+					state.places[place._id.toString()] = place;
+				});
 			} else {
 				if (window.location.pathname === '/app') {
 					window.location.href = '/login';

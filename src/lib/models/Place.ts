@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 export interface PlaceType {
+    _id: mongoose.Types.ObjectId;
     ownerId: mongoose.Types.ObjectId;
     name: string;
     iconUrl: string;

@@ -80,6 +80,6 @@
         padding: 0.5rem;
         width: 100%;
 
-        @apply bg-ctp-crust border-ctp-base text-lg outline-none;
+        @apply bg-ctp-crust border-ctp-base text-lg;
     }
 </style>
