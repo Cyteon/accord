@@ -6,10 +6,10 @@ body {
   @apply bg-ctp-base text-ctp-text;
 }
 
-a {
+a:not(.unique) {
     @apply text-ctp-yellow;
 }
 
-a:hover {
+a:hover:not(.unique) {
     text-decoration: underline;
 }

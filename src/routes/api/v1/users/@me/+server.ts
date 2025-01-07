@@ -1,4 +1,5 @@
 import Member from "$lib/models/Member";
+import Place from "$lib/models/Place"; // to initialize schema
 import { verifyRequest } from "$lib/api.server.js";
 
 export async function GET({ request }) {

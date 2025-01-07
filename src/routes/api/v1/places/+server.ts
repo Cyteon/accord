@@ -1,6 +1,7 @@
 import { verifyRequest } from '$lib/api.server.js';
 import Place from '$lib/models/Place';
 import Member from '$lib/models/Member';
+import Channel from '$lib/models/Channel';
 
 export async function PUT({ request }) {
     const user = await verifyRequest(request);
@@ -39,7 +40,13 @@ export async function PUT({ request }) {
         userId: user._id,
         placeId: place._id,
     })
-    await member.save()
+    await member.save();
 
-    return Response.json(place.toJSON(), { status: 201 });
+    const channel = new Channel({
+        placeId: place._id,
+        name: "general",
+    });
+    await channel.save();
+
+    return Response.json({ channels: [channel], ...place }, { status: 201 });
 }
