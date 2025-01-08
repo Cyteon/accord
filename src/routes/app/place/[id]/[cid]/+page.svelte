@@ -3,32 +3,38 @@
     import { getCookie } from "typescript-cookie";
     import { Hash, Send } from "lucide-svelte";
     import { browser } from "$app/environment";
-    import state from "$lib/state.svelte";
-    import type { PlaceType } from "$lib/models/Place.js";
-    import type { ChannelType } from "$lib/models/Channel.js";
+    import state_ from "$lib/state.svelte";
+    import type { PlaceType } from "$lib/models/Place";
+    import type { ChannelType } from "$lib/models/Channel";
+    import type { MessageType } from "$lib/models/Message";
     import { generateTimeString } from "$lib/utils";
+    import { onMount } from "svelte";
 
-    export let data;
-    $: getData(data.id);
+    let { data }: { data: { id: string, cid: string } } = $props();
+    let { id, cid } = data;
+
+    $effect(() => {
+        getData(data.id, data.cid);
+    });
 
     let place: PlaceType & {
         channels?: ChannelType[];
-    } | null = null;
+    } | null = $state(null);
 
-    let channel: ChannelType | null = null;
+    let channel: ChannelType & {
+        messages?: MessageType[];
+    } | null = $state(null);
 
-    let messageContent = "";
-    let sendMessageError = "";
+    let messageContent = $state("");
+    let sendMessageError = $state("");
 
-    async function getData(id: string) {
-        if (state.places[id]) {
-            // some temp data until load finished
-            place = state.places[id] as any;
+    async function getData(id: string, cid: string) {
+        if (state_.places[id]) {
+            place = state_.places[id] as any;
         } 
         
-        // check if it has all the other values, rn just channels
-        if (browser && !place?.channels) {
-            const res = await fetch(`/api/v1/channels/${data.cid}`, {
+        if (browser) {
+            const res = await fetch(`/api/v1/channels/${cid}`, {
                 headers: {
                     Authorization: `Bearer ${getCookie("token")}`,
                 },
@@ -38,20 +44,22 @@
                 const json = await res.json();
 
                 channel = json;
-                console.log(channel);
+                document?.getElementById("chats")?.scrollTo(0, document?.getElementById("chats")?.scrollHeight);
 
-                const res2 = await fetch(`/api/v1/places/${data.id}`, {
-                    headers: {
-                        Authorization: `Bearer ${getCookie("token")}`,
-                    },
-                });
+                if (!place?.channels) { // if chnnels not loaded, additional data may be needed :cwy:
+                    const res2 = await fetch(`/api/v1/places/${id}`, {
+                        headers: {
+                            Authorization: `Bearer ${getCookie("token")}`,
+                        },
+                    });
 
-                if (res2.ok) {
-                    place = await res2.json();
-                    state.places[place?._id.toString()!] = place as any;
+                    if (res2.ok) {
+                        place = await res2.json();
+                        state_.places[place?._id.toString()!] = place as any;
 
-                } else {
-                    window.location.href = "/app";
+                    } else {
+                        window.location.href = "/app";
+                    }
                 }
             } else {
                 window.location.href = "/app";
@@ -59,7 +67,13 @@
         }
     }
 
+    onMount(() => {
+        getData(id, cid);
+    });
+
     async function sendMessage() {
+        sendMessageError = "";
+
         if (!messageContent) return;
         if (messageContent.length > 2000) {
             sendMessageError = "Message is longer than 2000 characters >:(";
@@ -78,13 +92,17 @@
         if (res.ok) {
             messageContent = "";
             
-            if (!place?.channels?.find(c => c._id.toString() == data.cid)?.messages) {
-                place.channels.find(c => c._id.toString() == data.cid).messages = [];
+            if (!channel?.messages) {
+                channel.messages = [];
             }
+            
+            let json = await res.json();
 
-            place?.channels?.find(c => c._id.toString() == data.cid)?.messages.push(await res.json());
+            channel?.messages.push(json);
 
-            console.log(place?.channels?.find(c => c._id.toString() == data.cid)?.messages)
+            setTimeout(() => {
+                document?.getElementById("chats")?.scrollTo(0, document?.getElementById("chats")?.scrollHeight);
+            }, 100);
         } else {
             sendMessageError = await res.text();
 
@@ -93,6 +111,8 @@
             }
         }
     }
+
+    // is someone actually reading all this?
 </script>
 
 <div class="flex h-screen w-full">
@@ -122,19 +142,20 @@
         </div>
         
         <div class="p-4 pt-0 flex flex-col h-full">
-
-            {#each channel?.messages as msg}
-                <div class="flex mt-4">
-                    <img src={msg.authorId.pfpUrl} alt="user-icon" class="rounded-full w-16 h-16 mr-2" />
-                    <div>
-                        <div class="flex">
-                            <p class="font-bold text-2xl leading-none">{msg.authorId.displayName}</p>
-                            <p class="text-ctp-subtext0 mt-0.5 ml-2">{generateTimeString(msg.createdAt)}</p>
+            <div class="overflow-y-auto max-h-[calc(100vh-8rem)] fade-out" id="chats">
+                {#each channel?.messages as msg}
+                    <div class="flex mt-4">
+                        <img src={msg.authorId.pfpUrl} alt="user-icon" class="rounded-full w-16 h-16 mr-2" />
+                        <div>
+                            <div class="flex">
+                                <p class="font-bold text-2xl leading-none">{msg.authorId.displayName}</p>
+                                <p class="text-ctp-subtext0 mt-0.5 ml-2">{generateTimeString(msg.createdAt)}</p>
+                            </div>
+                            <p class="text-xl">{msg.content}</p>
                         </div>
-                        <p class="text-xl">{msg.content}</p>
                     </div>
-                </div>
-            {/each}
+                {/each}
+            </div>
 
             <div class="mt-auto">
                 <p class="text-ctp-red">{sendMessageError}</p>

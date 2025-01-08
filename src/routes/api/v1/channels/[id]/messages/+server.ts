@@ -40,5 +40,8 @@ export async function PUT({ params, request }) {
 
     // TODO: fire event to gateway here
 
-    return Response.json(message.toJSON(), { status: 201 });
+    return Response.json({
+        ...message.toJSON(),
+        authorId: user.toJSON(),
+    }, { status: 201 });
 }
