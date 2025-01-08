@@ -72,14 +72,3 @@
         </div>
     </div>
 </div>
-
-<style>
-    input {
-        border-width: 2px;
-        border-radius: 0.375rem;
-        padding: 0.5rem;
-        width: 100%;
-
-        @apply bg-ctp-crust border-ctp-base text-lg;
-    }
-</style>

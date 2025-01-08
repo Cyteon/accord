@@ -95,7 +95,8 @@
             </div>
 
             <h1 class="text-4xl font-bold">Join a place</h1>
-            <input type="text" placeholder="Invite Code" class="w-full p-2 my-4 bg-ctp-crust border border-ctp-surface0 rounded-md text-lg" bind:value={inviteCode} />
+            <input type="text" placeholder="Invite Code" class="w-full p-2 mt-4 bg-ctp-crust border border-ctp-surface0 rounded-md text-lg" bind:value={inviteCode} />
+            <p class="text-ctp-red mb-1 mt-2">{joinPlaceError}</p>
             <button on:click={joinPlace} class="unique w-full mt-2 bg-ctp-yellow text-ctp-crust rounded-md p-2 text-lg">Join</button>
         </div>
     </div>

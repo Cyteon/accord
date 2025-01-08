@@ -28,6 +28,14 @@
     let messageContent = $state("");
     let sendMessageError = $state("");
 
+    let showServerDropDown = $state(false);
+    let showInviteModal = $state(false);
+    let inviteMaxUses = $state(-1);
+    let inviteCode: {
+        code: string,
+        maxUses: number,
+    } | null = $state(null);
+
     async function getData(id: string, cid: string) {
         if (state_.places[id]) {
             place = state_.places[id] as any;
@@ -112,6 +120,33 @@
         }
     }
 
+    async function generateCode() {
+        if (inviteCode && inviteCode.maxUses == inviteMaxUses) {
+            return;
+        }
+
+        const res = await fetch(`/api/v1/places/${data.id}/invites`, {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${getCookie("token")}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                maxUses: inviteMaxUses,
+            }),
+        });
+
+        if (res.ok) {
+            inviteCode = await res.json();
+        } else {
+            const err = await res.json();
+            inviteCode = {
+                code: err.error,
+                maxUses: -2, // conflict = so it dosent return at start if this where to be same as inviteMaxUses
+            }
+        }
+    }
+
     // is someone actually reading all this?
 </script>
 
@@ -119,8 +154,18 @@
     <SideBar />
 
     <div class="bg-ctp-mantle w-full max-w-48 border-r">
-        <div class="px-5 py-2 border-b text-xl font-bold">
-            <span class="my-auto truncate">{place?.name}</span>
+        <div class="relative">
+            <button class="px-5 py-2 border-b text-xl font-bold hover:bg-ctp-surface0/25 transition-color duration-300 w-full text-left" onclick={() => showServerDropDown = !showServerDropDown}>
+                <span class="my-auto truncate">{place?.name}</span>
+            </button>
+
+            <div class="absolute w-full">
+                <div class={`${showServerDropDown ? "block" : "hidden"} bg-ctp-crust border rounded-md m-2 p-1`}>
+                    <button class="scb text-ctp-yellow" onclick={() => showInviteModal = true}>
+                        <span class="my-auto">Create Invite</span>
+                    </button>
+                </div>
+            </div>
         </div>
 
         {#each place?.channels! as channel}
@@ -168,4 +213,24 @@
             </div>
         </div>
     </div>
+
+    {#if showInviteModal}
+        <div class="flex absolute w-full h-full bg-ctp-mantle/50" onclick={() => showInviteModal = false}>
+            <div class="border p-4 bg-ctp-mantle m-auto rounded-md text-left" onclick={e => e.stopPropagation()}>
+                <h1 class="text-3xl font-bold">Create Invite!</h1>
+                <label for="inviteMaxUses" class="block my-2 text-lg">Max Uses (-1 = unlimited)</label>
+                <input type="number" min={-1} id="inviteMaxUses" bind:value={inviteMaxUses} class="" />
+
+                <button class="mt-2 bg-ctp-yellow text-ctp-crust w-full p-2 rounded-md" onclick={() => generateCode()}>
+                    <span class="my-auto">Generate</span>
+                </button>
+
+                {#if inviteCode}
+                    <p class="border p-2 bg-ctp-crust mt-2 rounded-md">
+                        {inviteCode.code}
+                    </p>
+                {/if}
+            </div>
+        </div>
+    {/if}
 </div>
