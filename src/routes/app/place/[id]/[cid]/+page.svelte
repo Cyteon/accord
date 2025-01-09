@@ -181,7 +181,7 @@
     // is someone actually reading all this?
 </script>
 
-<div class="flex h-screen w-full">
+<div class="flex h-screen w-full max-h-screen overflow-y-clip">
     <SideBar />
 
     <div class="bg-ctp-mantle w-full max-w-48 border-r">
@@ -233,7 +233,7 @@
                 {/each}
             </div>
 
-            <div class="mt-auto p-4">
+            <div class="mt-auto p-4 pt-3">
                 <p class="text-ctp-red">{sendMessageError}</p>
                 <div class="flex w-full">
                     <input type="text" class="w-full p-2 border bg-ctp-mantle rounded-md" placeholder="Message" bind:value={messageContent} onkeydown={e => e.key == "Enter" && sendMessage()} />
