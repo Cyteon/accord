@@ -217,8 +217,8 @@
             </h1>
         </div>
         
-        <div class="p-4 pt-0 flex flex-col h-full">
-            <div class="overflow-y-auto max-h-[calc(100vh-8rem)] fade-out" id="chats">
+        <div class="flex flex-col h-full">
+            <div class="overflow-y-auto max-h-[calc(100vh-7rem)] p-4 pt-0" id="chats">
                 {#each channel?.messages as msg}
                     <div class="flex mt-4">
                         <img src={msg.authorId.pfpUrl} alt="user-icon" class="rounded-full w-16 h-16 mr-2" />
@@ -233,7 +233,7 @@
                 {/each}
             </div>
 
-            <div class="mt-auto">
+            <div class="mt-auto p-4">
                 <p class="text-ctp-red">{sendMessageError}</p>
                 <div class="flex w-full">
                     <input type="text" class="w-full p-2 border bg-ctp-mantle rounded-md" placeholder="Message" bind:value={messageContent} onkeydown={e => e.key == "Enter" && sendMessage()} />
