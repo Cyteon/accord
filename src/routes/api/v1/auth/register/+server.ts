@@ -1,6 +1,9 @@
 import User from "$lib/models/User";
 import Token from "$lib/models/Token";
+import Member from "$lib/models/Member";
 import bcrypt from "bcrypt";
+
+import { DEFAULT_SERVER_ID } from "$env/static/private";
 
 export async function POST({ request }) {
     const { email, displayName, username, password } = await request.json();
@@ -23,8 +26,13 @@ export async function POST({ request }) {
         username,
         password: hash,
     });
-
     await user.save();
+
+    const member = new Member({
+        placeId: DEFAULT_SERVER_ID,
+        userId: user._id,
+    });
+    await member.save();
 
     const bytes = new Uint8Array(48);
     crypto.getRandomValues(bytes);

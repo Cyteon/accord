@@ -17,6 +17,16 @@
             return;
         }
 
+        if (/[^a-zA-Z0-9_]/.test(username)) {
+            error = "Username can only contain letters and numbers";
+            return;
+        }
+
+        if (password.length < 8) {
+            error = "Password must be at least 8 characters long";
+            return;
+        }
+
         const res = await fetch("/api/v1/auth/register", {
             method: "POST",
             headers: {
@@ -52,7 +62,7 @@
     <div class="mx-2 md:mx-0 flex w-full">
         <div class="m-auto bg-ctp-mantle p-6 rounded-md border border-ctp-surface0 w-full md:w-1/2 xl:w-1/4 h-fit flex flex-col">
             <h1 class="text-3xl font-bold">Create an Account</h1>
-            <form class="mt-4 flex flex-col h-full break-all">
+            <form class="mt-4 flex flex-col h-full break-words">
                 <label for="username" class="my-1 text-lg">Username</label>
                 <input type="text" placeholder="Username" bind:value={username} />
 

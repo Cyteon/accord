@@ -13,6 +13,10 @@
             error = "Please fill in all fields";
             return;
         }
+        if (password.length < 8) {
+            error = "Incorrect password";
+            return;
+        }
 
         const res = await fetch("/api/v1/auth/login", {
             method: "POST",

@@ -1,7 +1,7 @@
 <script lang="ts">
     import SideBar from "$lib/components/SideBar.svelte";
     import { getCookie } from "typescript-cookie";
-    import { Hash, Send } from "lucide-svelte";
+    import { Hash, Send, Plus } from "lucide-svelte";
     import { browser } from "$app/environment";
     import state_ from "$lib/state.svelte";
     import type { PlaceType } from "$lib/models/Place";
@@ -37,6 +37,9 @@
         maxUses: number,
     } | null = $state(null);
 
+    let showCreateChannelModal = $state(false);
+    let channelName = $state("");
+
     let sse;
 
     if (browser) {
@@ -57,7 +60,7 @@
                 channel.messages = [];
             }
 
-            if (data.authorId != state_.user._id) {
+            if (data.authorId._id != state_.user._id) {
                 channel.messages.push(data);
 
                 setTimeout(() => {
@@ -83,7 +86,10 @@
                 const json = await res.json();
 
                 channel = json;
-                document?.getElementById("chats")?.scrollTo(0, document?.getElementById("chats")?.scrollHeight);
+                
+                setTimeout(() => {
+                    document?.getElementById("chats")?.scrollTo(0, document?.getElementById("chats")?.scrollHeight);
+                }, 100)
 
                 if (!place?.channels) { // if chnnels not loaded, additional data may be needed :cwy:
                     const res2 = await fetch(`/api/v1/places/${id}`, {
@@ -178,6 +184,26 @@
         }
     }
 
+    async function createChannel() {
+        const res = await fetch(`/api/v1/places/${data.id}/channels`, {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${getCookie("token")}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                name: channelName,
+            }),
+        });
+
+        if (res.ok) {
+            showCreateChannelModal = false;
+            channelName = "";
+            
+            const json = await res.json();
+            place?.channels?.push(json);
+        }
+    }
     // is someone actually reading all this?
 </script>
 
@@ -199,11 +225,18 @@
             </div>
         </div>
 
+        {#if place?.ownerId == state_.user?._id}
+            <button class="px-2 mt-2 flex w-full" onclick={() => showCreateChannelModal = true}>
+                Create channel
+                <Plus class="size-fit ml-auto" />
+            </button>
+        {/if}
+
         {#each place?.channels! as channel}
             <div class={`px-2 py-1 rounded-md mx-2 mt-2 ${data.cid == channel._id.toString() ? "bg-ctp-surface0/50" : "hover:bg-ctp-surface0/25"} transition-color duration-300`}>
                 <a href={`/app/place/${data.id}/${channel._id}`} class="unique flex">
                     <Hash width={16} height={16} class="my-auto text-ctp-subtext0" />
-                    <span class="mb-1 ml-1 text-lg truncate">{channel.name}</span>
+                    <span class="mb-0.5 ml-1 text-lg truncate">{channel.name}</span>
                 </a>
             </div>
         {/each}
@@ -250,7 +283,7 @@
             <div class="border p-4 bg-ctp-mantle m-auto rounded-md text-left" onclick={e => e.stopPropagation()}>
                 <h1 class="text-3xl font-bold">Create Invite!</h1>
                 <label for="inviteMaxUses" class="block my-2 text-lg">Max Uses (-1 = unlimited)</label>
-                <input type="number" min={-1} id="inviteMaxUses" bind:value={inviteMaxUses} class="" />
+                <input type="number" min={-1} id="inviteMaxUses" bind:value={inviteMaxUses} />
 
                 <button class="mt-2 bg-ctp-yellow text-ctp-crust w-full p-2 rounded-md" onclick={() => generateCode()}>
                     <span class="my-auto">Generate</span>
@@ -261,6 +294,20 @@
                         {inviteCode.code}
                     </p>
                 {/if}
+            </div>
+        </div>
+    {/if}
+
+    {#if showCreateChannelModal}
+        <div class="flex absolute w-full h-full bg-ctp-mantle/50" onclick={() => showCreateChannelModal = false}>
+            <div class="border p-4 bg-ctp-mantle m-auto rounded-md text-left" onclick={e => e.stopPropagation()}>
+                <h1 class="text-3xl font-bold">Create Channel :P</h1>
+                <label for="channelName" class="block my-2 text-lg">Channel Name</label>
+                <input id="channelName" bind:value={channelName} onkeydown={e => e.key == "Enter" && createChannel()} />
+
+                <button class="mt-2 bg-ctp-yellow text-ctp-crust w-full p-2 rounded-md" onclick={() => createChannel()}>
+                    <span class="my-auto">Create</span>
+                </button>
             </div>
         </div>
     {/if}

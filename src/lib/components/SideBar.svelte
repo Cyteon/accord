@@ -61,12 +61,14 @@
     <span class="mx-1 mt-2 bg-ctp-base h-1 rounded-md"></span>
 
     {#each Object.values(state.places) as place}
-        <div class="group flex relative peer">
+        <div class="group flex relative">
             <a class="unique" href={`/app/place/${place._id}`} aria-label={place.name}>
                 <img src={place.iconUrl} alt="server-icon" class="rounded-md w-16 h-16 mt-2" />
             </a>
 
-            <p class="group-hover:flex hidden absolute left-full top-6 transform font-bold text-lg ml-4 bg-ctp-crust py-1 px-4 border border-ctp-surface0 rounded-md">{place.name}</p>
+            <p 
+                class="group-hover:flex hidden absolute left-full top-6 transform font-bold text-lg ml-4 bg-ctp-crust py-1 px-2 border border-ctp-surface0 rounded-md w-fit truncate"
+            >{place.name}</p>
         </div>
     {/each}
 
