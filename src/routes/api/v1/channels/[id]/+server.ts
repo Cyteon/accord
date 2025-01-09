@@ -1,6 +1,7 @@
 import { verifyRequest } from '$lib/api.server.js';
 import Channel from '$lib/models/Channel';
 import Message from '$lib/models/Message.js';
+import Member from '$lib/models/Member.js';
 
 export async function GET({ request, params }) {
     const user = await verifyRequest(request);
@@ -19,6 +20,12 @@ export async function GET({ request, params }) {
 
     if (!channel) {
         return Response.json({ error: "Channel not found" }, { status: 404 });
+    }
+
+    const member = await Member.findOne({ placeId: channel.placeId, userId: user._id });
+
+    if (!member) {
+        return Response.json({ error: "You cannot access this channel" }, { status: 403 });
     }
 
     const messages = await Message.find({ channelId: channel._id })

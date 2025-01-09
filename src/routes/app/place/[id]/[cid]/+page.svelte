@@ -9,6 +9,7 @@
     import type { MessageType } from "$lib/models/Message";
     import { generateTimeString } from "$lib/utils";
     import { onMount } from "svelte";
+    import { source } from "sveltekit-sse";
 
     let { data }: { data: { id: string, cid: string } } = $props();
     let { id, cid } = data;
@@ -35,6 +36,36 @@
         code: string,
         maxUses: number,
     } | null = $state(null);
+
+    let sse;
+
+    if (browser) {
+        source(`/api/v1/channels/${cid}/messages`, {
+            options: {
+                headers: {
+                    Authorization: `Bearer ${getCookie("token")}`,
+                }
+            }
+        }).select("message").subscribe((msg) => {
+            if (!msg) return;
+
+            const data = JSON.parse(msg);
+
+            console.log(data);
+
+            if (!channel?.messages) {
+                channel.messages = [];
+            }
+
+            if (data.authorId != state_.user._id) {
+                channel.messages.push(data);
+
+                setTimeout(() => {
+                    document?.getElementById("chats")?.scrollTo(0, document?.getElementById("chats")?.scrollHeight);
+                }, 100);
+            }
+        })
+    }
 
     async function getData(id: string, cid: string) {
         if (state_.places[id]) {
