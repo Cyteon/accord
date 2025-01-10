@@ -12,6 +12,14 @@ export async function POST({ request }) {
         return new Response("Missing fields", { status: 400 });
     }
 
+    if (username.length > 20) {
+        return new Response("Username too long", { status: 400 });
+    }
+
+    if (displayName.length > 30) {
+        return new Response("Display name too long", { status: 400 });
+    }
+
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
 
     if (existingUser) {

@@ -27,6 +27,16 @@
             return;
         }
 
+        if (username.length > 20) {
+            error = "Username must be less than 20 characters long";
+            return;
+        }
+
+        if (displayName.length > 30) {
+            error = "Display name must be less than 30 characters long";
+            return;
+        }
+
         const res = await fetch("/api/v1/auth/register", {
             method: "POST",
             headers: {

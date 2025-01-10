@@ -13,6 +13,7 @@
             error = "Please fill in all fields";
             return;
         }
+
         if (password.length < 8) {
             error = "Incorrect password";
             return;
