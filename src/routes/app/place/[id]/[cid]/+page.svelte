@@ -7,7 +7,7 @@
     import type { PlaceType } from "$lib/models/Place";
     import type { ChannelType } from "$lib/models/Channel";
     import type { MessageType } from "$lib/models/Message";
-    import { generateTimeString } from "$lib/utils";
+    import { generateTimeString, parseMsg } from "$lib/utils";
     import { onMount, tick } from "svelte";
     import { source } from "sveltekit-sse";
 
@@ -247,7 +247,7 @@
     <div class="bg-ctp-mantle w-full max-w-48 border-r">
         <div class="relative">
             <button class="px-5 py-2 border-b text-xl font-bold hover:bg-ctp-surface0/25 transition-color duration-300 w-full text-left" onclick={() => showServerDropDown = !showServerDropDown}>
-                <span class="my-auto truncate">{place?.name}</span>
+                <span class="block my-auto truncate">{place?.name}</span>
             </button>
 
             <div class="absolute w-full">
@@ -311,7 +311,9 @@
                                 <p 
                                     class="text-xl mb-0.5"
                                     style="overflow-wrap: break-word; word-break: break-word;"
-                                >{msg.content}</p>
+                                >
+                                    {@html parseMsg(msg.content)}
+                                </p>
                             </div>
                         </div>
                     </div>

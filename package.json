@@ -29,7 +29,9 @@
 	"dependencies": {
 		"@sveltejs/adapter-node": "^5.2.11",
 		"bcrypt": "^5.1.1",
+		"dompurify": "^3.2.3",
 		"lucide-svelte": "^0.469.0",
+		"marked": "^15.0.6",
 		"mongoose": "^8.9.3",
 		"typescript-cookie": "^1.0.6"
 	}

@@ -112,7 +112,7 @@
     <div class="bg-ctp-mantle w-full max-w-48 border-r">
         <div class="relative">
             <button class="px-5 py-2 border-b text-xl font-bold hover:bg-ctp-surface0/25 transition-color duration-300 w-full text-left" onclick={() => showServerDropDown = !showServerDropDown}>
-                <span class="my-auto truncate">{place?.name}</span>
+                <span class="block my-auto truncate">{place?.name}</span>
             </button>
 
             <div class="absolute w-full">
