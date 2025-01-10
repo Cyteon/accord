@@ -251,16 +251,29 @@
         </div>
         
         <div class="flex flex-col h-full">
-            <div class="overflow-y-auto max-h-[calc(100vh-7rem)] p-4 pt-0" id="chats">
-                {#each channel?.messages as msg}
-                    <div class="flex mt-4">
-                        <img src={msg.authorId.pfpUrl} alt="user-icon" class="rounded-full w-16 h-16 mr-2" />
+            <div class="overflow-y-auto max-h-[calc(100vh-7rem)] pt-0" id="chats">
+                {#each channel?.messages as msg, i}
+                    {@const group = (msg.authorId._id == channel?.messages![i-1]?.authorId._id && new Date(msg.createdAt).getTime() - new Date(channel?.messages![i-1]?.createdAt).getTime() < 60000)}
+
+                    <div class={`flex ${group ? "" : "mt-4 p-1"} px-4 hover:bg-ctp-mantle/80 transition-color duration-300 group`}>
+                        {#if !group}
+                            <img src={msg.authorId.pfpUrl} class="rounded-full w-14 h-14 mr-2" />
+                        {/if}
+
                         <div>
+                            {#if !group}
+                                <div class="flex">
+                                    <p class="font-bold text-2xl leading-none">{msg.authorId.displayName}</p>
+                                    <p class="text-ctp-subtext0 mt-0.5 ml-2">{generateTimeString(msg.createdAt)}</p>
+                                </div>
+                            {/if}
                             <div class="flex">
-                                <p class="font-bold text-2xl leading-none">{msg.authorId.displayName}</p>
-                                <p class="text-ctp-subtext0 mt-0.5 ml-2">{generateTimeString(msg.createdAt)}</p>
+                                {#if group}
+                                    <p class="text-ctp-subtext0 text-[0.75rem] mt-[6px] mr-3 invisible group-hover:visible">{new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>
+                                {/if}
+
+                                <p class="text-xl mb-0.5">{msg.content}</p>
                             </div>
-                            <p class="text-xl">{msg.content}</p>
                         </div>
                     </div>
                 {/each}
