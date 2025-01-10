@@ -31,7 +31,7 @@ export async function GET({ request, params }) {
     const messages = await Message.find({ channelId: channel._id })
         .limit(100)
         .sort({ createdAt: 1 })
-        .populate("authorId");
+        .populate({ path: "authorId", select: "_id username displayName pfpUrl" });
 
     return Response.json({
         ...channel.toJSON(),
