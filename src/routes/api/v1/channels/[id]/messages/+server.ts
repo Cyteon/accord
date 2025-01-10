@@ -21,7 +21,7 @@ export async function PUT({ params, request }) {
 
     const { content } = await request.json();
 
-    if (!content) {
+    if (!content || content.trim() == "") {
         return Response.json({ error: 'Missing content' }, { status: 400 });
     }
 

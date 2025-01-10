@@ -153,7 +153,7 @@
     async function sendMessage() {
         sendMessageError = "";
 
-        if (!messageContent) return;
+        if (!messageContent || messageContent.trim() == "") return;
         if (messageContent.length > 2000) {
             sendMessageError = "Message is longer than 2000 characters >:(";
             return;
