@@ -65,7 +65,7 @@
 
                 await tick();
             
-                document.getelmentById("chats")?.scrollTo(0, document?.getElementById("chats")?.scrollHeight);
+                document.getElementById("chats")?.scrollTo(0, document?.getElementById("chats")?.scrollHeight || 0);
                 
             }
         })
@@ -296,10 +296,10 @@
                             <img src={msg.authorId.pfpUrl} class="rounded-full w-14 h-14 mr-2" />
                         {/if}
 
-                        <div>
+                        <div class="flex flex-col">
                             {#if !group}
                                 <div class="flex">
-                                    <p class="font-bold text-2xl leading-none">{msg.authorId.displayName}</p>
+                                    <p class="font-bold text-2xl leading-none truncate max-w-96">{msg.authorId.displayName}</p>
                                     <p class="text-ctp-subtext0 mt-0.5 ml-2">{generateTimeString(msg.createdAt)}</p>
                                 </div>
                             {/if}
@@ -308,7 +308,10 @@
                                     <p class="text-ctp-subtext0 text-[0.75rem] mt-[6px] mr-3 invisible group-hover:visible">{new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>
                                 {/if}
 
-                                <p class="text-xl mb-0.5">{msg.content}</p>
+                                <p 
+                                    class="text-xl mb-0.5"
+                                    style="overflow-wrap: break-word; word-break: break-word;"
+                                >{msg.content}</p>
                             </div>
                         </div>
                     </div>

@@ -67,7 +67,7 @@
             </a>
 
             <p 
-                class="group-hover:flex hidden absolute left-full top-6 transform font-bold text-lg ml-4 bg-ctp-crust py-1 px-2 border border-ctp-surface0 rounded-md w-fit truncate"
+                class="group-hover:visible invisible absolute left-full top-6 transform font-bold text-lg ml-4 bg-ctp-crust py-1 px-2 border border-ctp-surface0 rounded-md w-fit max-w-48 truncate"
             >{place.name}</p>
         </div>
     {/each}
