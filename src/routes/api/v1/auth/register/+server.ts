@@ -28,11 +28,15 @@ export async function POST({ request }) {
     });
     await user.save();
 
-    const member = new Member({
-        placeId: DEFAULT_SERVER_ID,
-        userId: user._id,
-    });
-    await member.save();
+    try {
+        const member = new Member({
+            placeId: DEFAULT_SERVER_ID,
+            userId: user._id,
+        });
+        await member.save();
+    } catch (e) {
+        console.error(e);
+    }
 
     const bytes = new Uint8Array(48);
     crypto.getRandomValues(bytes);
