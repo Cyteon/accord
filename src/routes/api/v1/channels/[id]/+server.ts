@@ -3,7 +3,7 @@ import Channel from '$lib/models/Channel';
 import Message from '$lib/models/Message.js';
 import Member from '$lib/models/Member.js';
 
-export async function GET({ request, params }) {
+export async function GET({ request, params, url }) {
     const user = await verifyRequest(request);
 
     if (!user) {
@@ -15,6 +15,8 @@ export async function GET({ request, params }) {
     if (!id) {
         return Response.json({ error: "Missing channel id", }, { status: 400, });
     }
+
+    const offset = parseInt(url.searchParams.get("offset") || "0");
 
     const channel = await Channel.findById(id);
 
@@ -28,10 +30,13 @@ export async function GET({ request, params }) {
         return Response.json({ error: "You cannot access this channel" }, { status: 403 });
     }
 
-    const messages = await Message.find({ channelId: channel._id })
-        .limit(100)
-        .sort({ createdAt: 1 })
+    let messages = await Message.find({ channelId: channel._id })
+        .limit(50)
+        .skip(offset)
+        .sort({ createdAt: -1 })
         .populate({ path: "authorId", select: "_id username displayName pfpUrl" });
+
+    messages = messages.toReversed();
 
     return Response.json({
         ...channel.toJSON(),

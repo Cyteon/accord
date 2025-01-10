@@ -8,7 +8,7 @@
     import type { ChannelType } from "$lib/models/Channel";
     import type { MessageType } from "$lib/models/Message";
     import { generateTimeString } from "$lib/utils";
-    import { onMount } from "svelte";
+    import { onMount, tick } from "svelte";
     import { source } from "sveltekit-sse";
 
     let { data }: { data: { id: string, cid: string } } = $props();
@@ -40,7 +40,7 @@
     let showCreateChannelModal = $state(false);
     let channelName = $state("");
 
-    let sse;
+    let offset = 0;
 
     if (browser) {
         source(`/api/v1/channels/${cid}/messages`, {
@@ -49,7 +49,7 @@
                     Authorization: `Bearer ${getCookie("token")}`,
                 }
             }
-        }).select("message").subscribe((msg) => {
+        }).select("message").subscribe(async (msg) => {
             if (!msg) return;
 
             const data = JSON.parse(msg);
@@ -63,9 +63,10 @@
             if (data.authorId._id != state_.user._id) {
                 channel.messages.push(data);
 
-                setTimeout(() => {
-                    document?.getElementById("chats")?.scrollTo(0, document?.getElementById("chats")?.scrollHeight);
-                }, 100);
+                await tick();
+            
+                document.getelmentById("chats")?.scrollTo(0, document?.getElementById("chats")?.scrollHeight);
+                
             }
         })
     }
@@ -86,10 +87,10 @@
                 const json = await res.json();
 
                 channel = json;
+
+                await tick();
                 
-                setTimeout(() => {
-                    document?.getElementById("chats")?.scrollTo(0, document?.getElementById("chats")?.scrollHeight);
-                }, 100)
+                document?.getElementById("chats")?.scrollTo(0, document?.getElementById("chats")?.scrollHeight);
 
                 if (!place?.channels) { // if chnnels not loaded, additional data may be needed :cwy:
                     const res2 = await fetch(`/api/v1/places/${id}`, {
@@ -112,8 +113,41 @@
         }
     }
 
-    onMount(() => {
+    onMount(async () => {
         getData(id, cid);
+
+        const obserer = new IntersectionObserver(async (entries) => {
+            if (entries[0].isIntersecting) {
+                offset += 50;
+
+                const res = await fetch(`/api/v1/channels/${cid}?offset=${offset}`, {
+                    headers: {
+                        Authorization: `Bearer ${getCookie("token")}`,
+                    },
+                });
+
+                if (res.ok) {
+                    const json = await res.json();
+
+                    if (!channel?.messages) {
+                        channel.messages = [];
+                    }
+
+                    const currentScroll = document.getElementById("chats")!.scrollHeight;
+
+                    channel.messages = [...json.messages, ...channel.messages];
+
+                    await tick();
+                   
+                    document.getElementById("chats")!.scrollTo(0, document.getElementById("chats")!.scrollHeight - currentScroll);
+                    
+                } 
+            }
+        });
+
+        setTimeout(() => {
+            obserer.observe(document.getElementById("top")!);
+        }, 1000);
     });
 
     async function sendMessage() {
@@ -252,6 +286,8 @@
         
         <div class="flex flex-col h-full">
             <div class="overflow-y-auto max-h-[calc(100vh-7rem)] pt-0" id="chats">
+                <span class="invisible" id="top"></span>
+
                 {#each channel?.messages as msg, i}
                     {@const group = (msg.authorId._id == channel?.messages![i-1]?.authorId._id && new Date(msg.createdAt).getTime() - new Date(channel?.messages![i-1]?.createdAt).getTime() < 60000)}
 
