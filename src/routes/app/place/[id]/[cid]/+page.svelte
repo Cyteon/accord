@@ -276,7 +276,7 @@
         {/each}
     </div>
     
-    <div class="w-full flex flex-col">
+    <div class="w-full flex flex-col max-h-[calc(100vh-3rem)]">
         <div class="bg-ctp-mantle w-full h-fit py-[0.3rem] px-4 border-b">
             <h1 class="text-ctp-subtext0 text-lg font-bold flex">
                 <Hash width={24} height={24} class="my-auto text-ctp-subtext0" />
@@ -285,7 +285,7 @@
         </div>
         
         <div class="flex flex-col h-full">
-            <div class="overflow-y-auto max-h-[calc(100vh-7rem)] pt-0" id="chats">
+            <div class="overflow-y-auto " id="chats">
                 <span class="invisible" id="top"></span>
 
                 {#each channel?.messages as msg, i}
@@ -309,7 +309,7 @@
                                 {/if}
 
                                 <p 
-                                    class="text-xl mb-0.5"
+                                    class="text-xl mb-0.5 prose"
                                     style="overflow-wrap: break-word; word-break: break-word;"
                                 >
                                     {@html parseMsg(msg.content)}
@@ -323,8 +323,21 @@
             <div class="mt-auto p-4 pt-3">
                 <p class="text-ctp-red">{sendMessageError}</p>
                 <div class="flex w-full">
-                    <input type="text" class="w-full p-2 border bg-ctp-mantle rounded-md" placeholder="Message" bind:value={messageContent} onkeydown={e => e.key == "Enter" && sendMessage()} />
-                    <button class="bg-ctp-mantle hover:text-ctp-blue transition-all duration-300 border rounded-md ml-2 p-2" onclick={sendMessage}>
+                    <textarea 
+                        class="w-full p-2 border bg-ctp-mantle rounded-md resize-none max-h-32"
+                        placeholder="Message" bind:value={messageContent} 
+                        rows={1}
+                        oninput={async (e) => {
+                            e.target.style.height = "auto";
+                            e.target.style.height = `${e.target.scrollHeight}px`;
+
+                            await tick();
+
+                            document.getElementById("chats")!.scrollTo(0, document.getElementById("chats")?.scrollHeight || 0);
+                        }}
+                        onkeydown={e => e.key == "Enter" && !e.shiftKey && sendMessage()}
+                    ></textarea>
+                    <button class="bg-ctp-mantle hover:text-ctp-blue transition-all duration-300 border rounded-md ml-2 p-2 self-end" onclick={sendMessage}>
                         <Send class="size-full" />
                     </button>
                 </div>

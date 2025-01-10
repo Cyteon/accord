@@ -27,7 +27,7 @@ input {
   @apply bg-ctp-crust text-lg;
 }
 
-input:focus  {
+input:focus, textarea:focus {
   outline: none;
 }
 
@@ -39,4 +39,10 @@ input:focus  {
   border-radius: 0.25rem;
 
   @apply hover:bg-ctp-surface0/35;
+}
+
+pre {
+  border-width: 1px;
+  padding: 0.5rem 1rem !important;
+  margin: 0.5rem 0 !important;
 }

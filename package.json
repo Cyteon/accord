@@ -28,6 +28,7 @@
 	},
 	"dependencies": {
 		"@sveltejs/adapter-node": "^5.2.11",
+		"@tailwindcss/typography": "^0.5.16",
 		"bcrypt": "^5.1.1",
 		"dompurify": "^3.2.3",
 		"lucide-svelte": "^0.469.0",
