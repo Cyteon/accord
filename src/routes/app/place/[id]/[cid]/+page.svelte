@@ -285,7 +285,7 @@
         </div>
         
         <div class="flex flex-col h-full">
-            <div class="overflow-y-auto " id="chats">
+            <div class="overflow-y-auto h-screen" id="chats">
                 <span class="invisible" id="top"></span>
 
                 {#each channel?.messages as msg, i}
