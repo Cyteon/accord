@@ -48,5 +48,5 @@ export async function PUT({ request }) {
     });
     await channel.save();
 
-    return Response.json({ channels: [channel], ...place }, { status: 201 });
+    return Response.json({ channels: [channel], ...place.toJSON() }, { status: 201 });
 }
