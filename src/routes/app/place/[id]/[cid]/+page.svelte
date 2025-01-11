@@ -12,6 +12,7 @@
     import { source } from "sveltekit-sse";
 
     let { data }: { data: { id: string, cid: string } } = $props();
+    let lastCID = data.cid;
 
     $effect(() => {
         getData(data.id, data.cid);
@@ -42,19 +43,27 @@
 
     let offset = 0;
 
-    if (browser) {
-        source(`/api/v1/channels/${data.cid}/messages`, {
+    let sse = null;
+
+    function restartSSE() {
+        sse = source(`/api/v1/sse`, {
             options: {
                 headers: {
                     Authorization: `Bearer ${getCookie("token")}`,
-                }
+                },
+
+                body: JSON.stringify({ 
+                    channels: [data.cid],
+                }),
             }
-        }).select("message").subscribe(async (value) => {
+        });
+
+        sse.select("message").subscribe(async (value) => {
             if (!value) return;
 
             const msg = JSON.parse(value);
 
-            console.log(data);
+            console.log(msg);
 
             if (!channel?.messages) {
                 channel.messages = [];
@@ -68,14 +77,20 @@
                 document.getElementById("chats")?.scrollTo(0, document?.getElementById("chats")?.scrollHeight || 0);
                 
             }
-        })
+        });
     }
 
     async function getData(id: string, cid: string) {
         if (state_.places[id]) {
             place = state_.places[id] as any;
         } 
-        
+
+        if (sse && lastCID != cid) {
+            sse.close();
+            sse = null;
+        }
+        if (!sse) restartSSE();
+
         if (browser) {
             const res = await fetch(`/api/v1/channels/${cid}`, {
                 headers: {
