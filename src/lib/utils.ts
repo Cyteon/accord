@@ -23,5 +23,6 @@ export function generateTimeString(date: string): string {
 export function parseMsg(content: string): string {
     let cleaned = DOMPurify.sanitize(content, { ALLOWED_TAGS: ["b", "strong", "i", "em", "mark", "small", "del", "ins", "sub", "sup"] });
 
-    return marked(cleaned) as string;
+    let final = DOMPurify.sanitize(marked(cleaned) as string)
+    return final;
 }
