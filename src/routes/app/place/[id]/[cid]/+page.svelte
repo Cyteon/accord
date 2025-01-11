@@ -86,8 +86,8 @@
 
             if (res.ok) {
                 const json = await res.json();
-
                 channel = json;
+                offset = 0;
 
                 await tick();
                 
