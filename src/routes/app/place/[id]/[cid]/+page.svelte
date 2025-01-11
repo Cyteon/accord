@@ -12,7 +12,6 @@
     import { source } from "sveltekit-sse";
 
     let { data }: { data: { id: string, cid: string } } = $props();
-    let { id, cid } = data;
 
     $effect(() => {
         getData(data.id, data.cid);
@@ -44,16 +43,16 @@
     let offset = 0;
 
     if (browser) {
-        source(`/api/v1/channels/${cid}/messages`, {
+        source(`/api/v1/channels/${data.cid}/messages`, {
             options: {
                 headers: {
                     Authorization: `Bearer ${getCookie("token")}`,
                 }
             }
-        }).select("message").subscribe(async (msg) => {
-            if (!msg) return;
+        }).select("message").subscribe(async (value) => {
+            if (!value) return;
 
-            const data = JSON.parse(msg);
+            const msg = JSON.parse(value);
 
             console.log(data);
 
@@ -61,8 +60,8 @@
                 channel.messages = [];
             }
 
-            if (data.authorId._id != state_.user._id) {
-                channel.messages.push(data);
+            if (msg.authorId._id != state_?.user?._id && msg.channelId == data.cid) {
+                channel.messages.push(msg);
 
                 await tick();
             
@@ -115,13 +114,13 @@
     }
 
     onMount(async () => {
-        getData(id, cid);
+        getData(data.id, data.cid);
 
-        const obserer = new IntersectionObserver(async (entries) => {
+        const observer = new IntersectionObserver(async (entries) => {
             if (entries[0].isIntersecting) {
                 offset += 50;
 
-                const res = await fetch(`/api/v1/channels/${cid}?offset=${offset}`, {
+                const res = await fetch(`/api/v1/channels/${data.cid}?offset=${offset}`, {
                     headers: {
                         Authorization: `Bearer ${getCookie("token")}`,
                     },
@@ -147,7 +146,7 @@
         });
 
         setTimeout(() => {
-            obserer.observe(document.getElementById("top")!);
+            observer.observe(document.getElementById("top")!);
         }, 1000);
     });
 
