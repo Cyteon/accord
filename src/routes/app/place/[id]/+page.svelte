@@ -21,6 +21,7 @@
 
     let showCreateChannelModal = false;
     let channelName = "";
+    let createChannelError = "";
 
     let inviteCode: {
         code: String,
@@ -102,6 +103,12 @@
             }
 
             place?.channels?.push(json);
+        } else {
+            createChannelError = await res.text();
+
+            if (createChannelError.length > 100) {
+                createChannelError = "An error occurred while creating the channel.";
+            }
         }
     }
 </script>
@@ -131,14 +138,16 @@
             </button>
         {/if}
 
-        {#each place?.channels! as channel}
-            <div class="px-2 py-1 rounded-md mx-2 mt-2 hover:bg-ctp-surface0/25 transition-color duration-300">
-                <a href={`/app/place/${data.id}/${channel._id}`} class="unique flex">
-                    <Hash width={16} height={16} class="my-auto text-ctp-subtext0" />
-                    <span class="mb-0.5 ml-1 text-lg truncate">{channel.name}</span>
-                </a>
-            </div> 
-        {/each}
+        <div class="overflow-y-auto h-[calc(100%-7rem)]">
+            {#each place?.channels! as channel}
+                <div class="px-2 py-1 rounded-md mx-2 mt-2 hover:bg-ctp-surface0/25 transition-color duration-300">
+                    <a href={`/app/place/${data.id}/${channel._id}`} class="unique flex">
+                        <Hash width={16} height={16} class="my-auto text-ctp-subtext0" />
+                        <span class="mb-0.5 ml-1 text-lg truncate">{channel.name}</span>
+                    </a>
+                </div> 
+            {/each}
+        </div>
     </div>
 
     {#if showInviteModal}
@@ -168,7 +177,9 @@
                 <label for="channelName" class="block my-2 text-lg">Channel Name</label>
                 <input id="channelName" bind:value={channelName} onkeydown={e => e.key == "Enter" && createChannel()} />
 
-                <button class="mt-2 bg-ctp-yellow text-ctp-crust w-full p-2 rounded-md" onclick={() => createChannel()}>
+                <p class="text-ctp-red mt-1 mb-2">{createChannelError}</p>
+
+                <button class="bg-ctp-yellow text-ctp-crust w-full p-2 rounded-md" onclick={() => createChannel()}>
                     <span class="my-auto">Create</span>
                 </button>
             </div>

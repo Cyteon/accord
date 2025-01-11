@@ -39,6 +39,7 @@
 
     let showCreateChannelModal = $state(false);
     let channelName = $state("");
+    let createChannelError = $state("");
 
     let offset = 0;
 
@@ -170,6 +171,7 @@
 
         if (res.ok) {
             messageContent = "";
+            document.getElementById("messageInput")!.style.height = "auto";
             
             if (!channel?.messages) {
                 channel.messages = [];
@@ -236,12 +238,18 @@
             
             const json = await res.json();
             place?.channels?.push(json);
+        } else {
+            createChannelError = await res.text();
+
+            if (createChannelError.length > 100) {
+                createChannelError = "An error occurred while creating the channel.";
+            }
         }
     }
     // is someone actually reading all this?
 </script>
 
-<div class="flex h-screen w-full max-h-screen overflow-y-clip">
+<div class="flex h-screen w-full max-h-screen overflow-y-hidden">
     <SideBar />
 
     <div class="bg-ctp-mantle w-full max-w-48 border-r">
@@ -326,6 +334,7 @@
                     <textarea 
                         class="w-full p-2 border bg-ctp-mantle rounded-md resize-none max-h-32"
                         placeholder="Message" bind:value={messageContent} 
+                        id="messageInput"
                         rows={1}
                         oninput={async (e) => {
                             e.target.style.height = "auto";
@@ -335,7 +344,12 @@
 
                             document.getElementById("chats")!.scrollTo(0, document.getElementById("chats")?.scrollHeight || 0);
                         }}
-                        onkeydown={e => e.key == "Enter" && !e.shiftKey && sendMessage()}
+                        onkeydown={e => {
+                            if (e.key == "Enter" && !e.shiftKey) {
+                                e.preventDefault();
+                                sendMessage();
+                            }
+                        }}
                     ></textarea>
                     <button class="bg-ctp-mantle hover:text-ctp-blue transition-all duration-300 border rounded-md ml-2 p-2 self-end" onclick={sendMessage}>
                         <Send class="size-full" />
@@ -372,7 +386,9 @@
                 <label for="channelName" class="block my-2 text-lg">Channel Name</label>
                 <input id="channelName" bind:value={channelName} onkeydown={e => e.key == "Enter" && createChannel()} />
 
-                <button class="mt-2 bg-ctp-yellow text-ctp-crust w-full p-2 rounded-md" onclick={() => createChannel()}>
+                <p class="text-ctp-red mt-1 mb-2">{createChannelError}</p>
+
+                <button class="bg-ctp-yellow text-ctp-crust w-full p-2 rounded-md" onclick={() => createChannel()}>
                     <span class="my-auto">Create</span>
                 </button>
             </div>

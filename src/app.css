@@ -43,6 +43,6 @@ input:focus, textarea:focus {
 
 pre {
   border-width: 1px;
-  padding: 0.5rem 1rem !important;
+  padding: 0.5rem 1rem 0.3rem 1rem !important;
   margin: 0.5rem 0 !important;
 }

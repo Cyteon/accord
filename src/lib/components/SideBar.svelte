@@ -2,11 +2,13 @@
     import { Home, Cog, Plus } from "lucide-svelte";
     import state from "$lib/state.svelte"; 
     import { getCookie } from "typescript-cookie";
+  import { onMount } from "svelte";
 
     let showCreatePlaceModal = false;
     let placeName = "";
     let inviteCode = "";
     let joinPlaceError = "";
+    let createPlaceError = "";
 
     async function createPlace() {
         const res = await fetch("/api/v1/places", {
@@ -25,6 +27,12 @@
             const json = await res.json();
 
             state.places[json._id] = json;
+        } else {
+            createPlaceError = await res.text();
+
+            if (createPlaceError.length > 100) {
+                createPlaceError = "An error occurred while creating the place.";
+            }
         }
     }
 
@@ -51,34 +59,59 @@
             }
         }
     }
+
+    let placePositions = {};
+
+    function updatePlacePositions() {
+        Object.values(state.places).forEach(place => {
+            const placeElement = document.getElementById(`place-${place._id}`);
+            const iconElement = placeElement?.querySelector('img');
+            
+            if (placeElement && iconElement) {
+                const rect = iconElement.getBoundingClientRect();
+                placePositions[place._id] = {
+                    top: rect.top + window.scrollY - 8,
+                    left: rect.left + window.scrollX
+                };
+            }
+        });
+    }
+
+    onMount(() => {
+        updatePlacePositions();
+        document.getElementById('places').addEventListener('scroll', updatePlacePositions);
+    });
 </script>
 
-<nav class="bg-ctp-crust p-2 flex flex-col">
-    <a href="/app">
+<nav class="bg-ctp-crust py-2 flex flex-col">
+    <a href="/app" class="mx-2">
         <Home class="size-full" />
     </a>
 
-    <span class="mx-1 mt-2 bg-ctp-base h-1 rounded-md"></span>
+    <span class="mx-3 mt-2 bg-ctp-base h-1 rounded-md"></span>
 
-    {#each Object.values(state.places) as place}
-        <div class="group flex relative">
-            <a class="unique" href={`/app/place/${place._id}`} aria-label={place.name}>
-                <img src={place.iconUrl} alt="server-icon" class="rounded-md w-16 h-16 mt-2" />
-            </a>
+    <div class="flex flex-col overflow-y-auto overflow-x-clip px-2" style="scrollbar-width: thin;" id="places">
+        {#each Object.values(state.places) as place}
+            <div class="group flex" id={`place-${place._id}`}>
+                <a class="unique" href={`/app/place/${place._id}`} aria-label={place.name}>
+                    <img src={place.iconUrl} alt="server-icon" class="rounded-md w-16 h-16 mt-2" />
+                </a>
 
-            <p 
-                class="group-hover:visible invisible absolute left-full top-6 transform font-bold text-lg ml-4 bg-ctp-crust py-1 px-2 border border-ctp-surface0 rounded-md w-fit max-w-48 truncate"
-            >{place.name}</p>
-        </div>
-    {/each}
+                <p 
+                    class="group-hover:block hidden absolute ml-20 mt-5 transform font-bold text-lg bg-ctp-crust py-1 px-2 border border-ctp-surface0 rounded-md w-fit max-w-48 truncate"
+                    style="top: {placePositions[place._id]?.top}px;"
+                >{place.name}</p>
+            </div>
+        {/each}
 
-    <button on:click={() => showCreatePlaceModal = true} class="my-2 text-ctp-yellow">
-        <Plus class="size-full" />
-    </button>
+        <button on:click={() => showCreatePlaceModal = true} class="my-2 text-ctp-yellow">
+            <Plus class="size-full" />
+        </button>
+    </div>
 
-    <span class="mx-1 mb-2 mt-auto bg-ctp-base h-1 rounded-md"></span>
+    <span class="mx-3 mb-2 mt-auto bg-ctp-base h-1 rounded-md"></span>
 
-    <a href="/app/settings">
+    <a href="/app/settings" class="mx-2">
         <Cog class="size-full" />
     </a>
 </nav>
@@ -87,7 +120,8 @@
     <div class="absolute w-full h-screen bg-ctp-mantle/50 flex" on:click={() => showCreatePlaceModal = false}>
         <div class="bg-ctp-mantle m-auto p-6 rounded-md border border-ctp-surface0" on:click={e => e.stopPropagation()}>
             <h1 class="text-4xl font-bold">Create a new place</h1>
-            <input type="text" placeholder="Place name" class="w-full p-2 my-4 bg-ctp-crust border border-ctp-surface0 rounded-md text-lg" bind:value={placeName} />
+            <input type="text" placeholder="Place name" class="w-full p-2 mt-4 bg-ctp-crust border border-ctp-surface0 rounded-md text-lg" bind:value={placeName} />
+            <p class="text-ctp-red mb-1 mt-2">{createPlaceError}</p>
             <button on:click={createPlace} class="unique w-full mt-2 bg-ctp-yellow text-ctp-crust rounded-md p-2 text-lg">Create</button>
 
             <div class="flex mt-2 mb-1">
