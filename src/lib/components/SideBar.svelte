@@ -2,7 +2,7 @@
     import { Home, Cog, Plus } from "lucide-svelte";
     import state from "$lib/state.svelte"; 
     import { getCookie } from "typescript-cookie";
-  import { onMount } from "svelte";
+    import { onMount } from "svelte";
 
     let showCreatePlaceModal = false;
     let placeName = "";
@@ -49,8 +49,8 @@
 
         if (res.ok) {
             const json = await res.json();
-
             state.places[json._id] = json;
+            showCreatePlaceModal = false;
         } else {
             joinPlaceError = await res.text();
 

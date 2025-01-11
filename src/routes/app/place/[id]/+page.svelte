@@ -32,7 +32,7 @@
         if (state.places[id]) {
             // some temp data until load finished
             place = state.places[id];
-        } 
+        }
         
         // check if it has all the other values, rn just channels
         if (browser && !place?.channels) {
@@ -47,6 +47,8 @@
 
                 // cause this may have some more data
                 state.places[place?._id.toString()!] = place as any;
+
+                inviteCode = null;
             } else {
                 window.location.href = "/app";
             }

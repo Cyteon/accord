@@ -102,6 +102,7 @@
                 const json = await res.json();
                 channel = json;
                 offset = 0;
+                inviteCode = null;
 
                 await tick();
                 
@@ -195,9 +196,9 @@
 
             channel?.messages.push(json);
 
-            setTimeout(() => {
-                document?.getElementById("chats")?.scrollTo(0, document?.getElementById("chats")?.scrollHeight);
-            }, 100);
+            await tick();
+            
+            document?.getElementById("chats")?.scrollTo(0, document?.getElementById("chats")?.scrollHeight);
         } else {
             sendMessageError = await res.text();
 
@@ -288,14 +289,16 @@
             </button>
         {/if}
 
-        {#each place?.channels! as channel}
-            <div class={`px-2 py-1 rounded-md mx-2 mt-2 ${data.cid == channel._id.toString() ? "bg-ctp-surface0/50" : "hover:bg-ctp-surface0/25"} transition-color duration-300`}>
-                <a href={`/app/place/${data.id}/${channel._id}`} class="unique flex">
-                    <Hash width={16} height={16} class="my-auto text-ctp-subtext0" />
-                    <span class="mb-0.5 ml-1 text-lg truncate">{channel.name}</span>
-                </a>
-            </div>
-        {/each}
+        <div class="overflow-y-auto h-[calc(100%-7rem)]">
+            {#each place?.channels! as channel}
+                <div class={`px-2 py-1 rounded-md mx-2 mt-2 ${data.cid == channel._id.toString() ? "bg-ctp-surface0/50" : "hover:bg-ctp-surface0/25"} transition-color duration-300`}>
+                    <a href={`/app/place/${data.id}/${channel._id}`} class="unique flex">
+                        <Hash width={16} height={16} class="my-auto text-ctp-subtext0" />
+                        <span class="mb-0.5 ml-1 text-lg truncate">{channel.name}</span>
+                    </a>
+                </div>
+            {/each}
+        </div>
     </div>
     
     <div class="w-full flex flex-col max-h-[calc(100vh-3rem)]">

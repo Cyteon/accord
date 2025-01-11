@@ -1,17 +1,17 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 body {
   @apply bg-ctp-base text-ctp-text;
 }
 
 a:not(.unique) {
-    @apply text-ctp-yellow;
+  @apply text-ctp-yellow;
 }
 
 a:hover:not(.unique) {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 * {
@@ -27,11 +27,13 @@ input {
   @apply bg-ctp-crust text-lg;
 }
 
-input:focus, textarea:focus {
+input:focus,
+textarea:focus {
   outline: none;
 }
 
-.scb { /* server choice button */
+.scb {
+  /* server choice button */
   transition: all 300ms;
   width: 100%;
   text-align: left;

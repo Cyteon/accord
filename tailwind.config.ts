@@ -1,12 +1,12 @@
-import type { Config } from 'tailwindcss';
-import catppuccin from "@catppuccin/tailwindcss"
-import typography from '@tailwindcss/typography'
+import type { Config } from "tailwindcss";
+import catppuccin from "@catppuccin/tailwindcss";
+import typography from "@tailwindcss/typography";
 
 let accent = "blue";
 let linkColor = "yellow";
 
 export default {
-  content: ['./src/**/*.{html,js,svelte,ts}'],
+  content: ["./src/**/*.{html,js,svelte,ts}"],
 
   theme: {
     extend: {
@@ -51,17 +51,17 @@ export default {
             "--tw-prose-invert-td-borders": theme(
               `colors.ctp-${accent}.DEFAULT`,
             ),
-          }
-        }
-      })
-    }
+          },
+        },
+      }),
+    },
   },
 
   plugins: [
     catppuccin({
       defaultFlavour: "mocha",
-      prefix: "ctp"
+      prefix: "ctp",
     }),
-    typography
-  ]
+    typography,
+  ],
 } satisfies Config;
