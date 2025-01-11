@@ -297,7 +297,7 @@
                 <span class="invisible" id="top"></span>
 
                 {#each channel?.messages as msg, i}
-                    {@const group = (msg.authorId._id == channel?.messages![i-1]?.authorId._id && new Date(msg.createdAt).getTime() - new Date(channel?.messages![i-1]?.createdAt).getTime() < 60000)}
+                    {@const group = (msg.authorId?._id == channel?.messages![i-1]?.authorId?._id && new Date(msg.createdAt).getTime() - new Date(channel?.messages![i-1]?.createdAt).getTime() < 60000)}
 
                     <div class={`flex ${group ? "" : "mt-4 p-1"} px-4 hover:bg-ctp-mantle/80 transition-color duration-300 group`}>
                         {#if !group}
@@ -307,7 +307,7 @@
                         <div class="flex flex-col">
                             {#if !group}
                                 <div class="flex">
-                                    <p class="font-bold text-2xl leading-none truncate max-w-96">{msg.authorId.displayName}</p>
+                                    <p class="font-bold text-2xl leading-none truncate max-w-96">{msg.authorId?.displayName || "[deleted user]"}</p>
                                     <p class="text-ctp-subtext0 mt-0.5 ml-2">{generateTimeString(msg.createdAt)}</p>
                                 </div>
                             {/if}
