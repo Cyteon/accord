@@ -18,7 +18,7 @@
         }
 
         if (/[^a-zA-Z0-9_]/.test(username)) {
-            error = "Username can only contain letters and numbers";
+            error = "Username can only contain letters, numbers, and underscores";
             return;
         }
 

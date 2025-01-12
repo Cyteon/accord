@@ -16,6 +16,10 @@ export async function POST({ request }) {
     return new Response("Username too long", { status: 400 });
   }
 
+  if (/[^a-zA-Z0-9_]/.test(username)) {
+    return new Response("Invalid characters in username", { status: 400 });
+  }
+
   if (displayName.length > 30) {
     return new Response("Display name too long", { status: 400 });
   }
