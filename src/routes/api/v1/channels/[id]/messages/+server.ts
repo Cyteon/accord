@@ -75,7 +75,11 @@ export async function PUT({ params, request }) {
   return Response.json(
     {
       ...message.toJSON(),
-      authorId: user.toJSON(),
+      authorId: {
+        _id: user._id,
+        displayName: user.displayName,
+        pfpUrl: user.pfpUrl,
+      }
     },
     { status: 201 },
   );
