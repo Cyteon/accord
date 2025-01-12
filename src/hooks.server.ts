@@ -39,7 +39,7 @@ const limiters = [
     endsWith: "/messages",
     method: "PUT",
     limiter: new RetryAfterRateLimiter({
-      plugins: [new TokenRateLimiter([30, "m"])],
+      plugins: [new TokenRateLimiter([25, "m"])],
     }),
   },
   {
@@ -71,6 +71,17 @@ const limiters = [
       IPUA: [
         [10, "m"],
         [50, "10m"],
+      ],
+    }),
+  },
+  {
+    endsWith: "/register",
+    method: "POST",
+
+    limiter: new RetryAfterRateLimiter({
+      IPUA: [
+        [1, "6h"],
+        [2, "d"],
       ],
     }),
   },
