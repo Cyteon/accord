@@ -8,7 +8,7 @@
     import type { ChannelType } from "$lib/models/Channel";
     import type { MessageType } from "$lib/models/Message";
     import { generateTimeString, parseMsg } from "$lib/utils";
-    import { onMount, tick } from "svelte";
+    import { onMount, tick, untrack } from "svelte";
     import { source } from "sveltekit-sse";
 
     let { data }: { data: { id: string, cid: string } } = $props();
@@ -81,52 +81,54 @@
     }
 
     async function getData(id: string, cid: string) {
-        if (state_.places[id]) {
-            place = state_.places[id] as any;
-        } 
+        untrack(async () => {
+            if (state_.places[id]) {
+                place = state_.places[id] as any;
+            } 
 
-        if (sse && lastCID != cid) {
-            sse.close();
-            sse = null;
-        }
-        if (!sse) restartSSE();
-
-        if (browser) {
-            const res = await fetch(`/api/v1/channels/${cid}`, {
-                headers: {
-                    Authorization: `Bearer ${getCookie("token")}`,
-                },
-            });
-
-            if (res.ok) {
-                const json = await res.json();
-                channel = json;
-                offset = 0;
-                inviteCode = null;
-
-                await tick();
-                
-                document?.getElementById("chats")?.scrollTo(0, document?.getElementById("chats")?.scrollHeight);
-
-                if (!place?.channels) { // if chnnels not loaded, additional data may be needed :cwy:
-                    const res2 = await fetch(`/api/v1/places/${id}`, {
-                        headers: {
-                            Authorization: `Bearer ${getCookie("token")}`,
-                        },
-                    });
-
-                    if (res2.ok) {
-                        place = await res2.json();
-                        state_.places[place?._id.toString()!] = place as any;
-
-                    } else {
-                        window.location.href = "/app";
-                    }
-                }
-            } else {
-                window.location.href = "/app";
+            if (sse && lastCID != cid) {
+                sse.close();
+                sse = null;
             }
-        }
+            if (!sse) restartSSE();
+
+            if (browser) {
+                const res = await fetch(`/api/v1/channels/${cid}`, {
+                    headers: {
+                        Authorization: `Bearer ${getCookie("token")}`,
+                    },
+                });
+
+                if (res.ok) {
+                    const json = await res.json();
+                    channel = json;
+                    offset = 0;
+                    inviteCode = null;
+
+                    await tick();
+                    
+                    document?.getElementById("chats")?.scrollTo(0, document?.getElementById("chats")?.scrollHeight);
+
+                    if (!place?.channels) { // if chnnels not loaded, additional data may be needed :cwy:
+                        const res2 = await fetch(`/api/v1/places/${id}`, {
+                            headers: {
+                                Authorization: `Bearer ${getCookie("token")}`,
+                            },
+                        });
+
+                        if (res2.ok) {
+                            place = await res2.json();
+                            state_.places[place?._id.toString()!] = place as any;
+
+                        } else {
+                            window.location.href = "/app";
+                        }
+                    }
+                } else {
+                    window.location.href = "/app";
+                }
+            }
+        });
     }
 
     onMount(async () => {

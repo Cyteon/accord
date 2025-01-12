@@ -49,11 +49,12 @@
         -->
 
         <div class="text-center mt-4 flex flex-col h-full">
-            <h2 class="text-6xl font-bold">Welcome to Accord!</h2>
-            <p class="text-2xl">Get started by heading to a server and going into a channel</p>
-
-            <div class="mt-auto mb-4">
-                <a href="https://github.com/cyteon/accord" target="_blank" class="text-lg">View the source code</a>
+            <div class="my-auto">
+                <h2 class="text-6xl font-bold">Welcome to Accord!</h2>
+                <p class="text-2xl">Get started by heading to a server and going into a channel</p>
+                <div class="mt-4">
+                    <a href="https://github.com/cyteon/accord" target="_blank" class="text-lg">View the source code</a>
+                </div>
             </div>
         </div>
     </div>
