@@ -18,6 +18,7 @@
     "@sveltejs/adapter-auto": "^3.0.0",
     "@sveltejs/kit": "^2.0.0",
     "@sveltejs/vite-plugin-svelte": "^4.0.0",
+    "@types/node": "^22.10.5",
     "autoprefixer": "^10.4.20",
     "prettier": "3.4.2",
     "svelte": "^5.0.0",
@@ -35,6 +36,7 @@
     "dompurify": "^3.2.3",
     "lucide-svelte": "^0.469.0",
     "marked": "^15.0.6",
+    "minio": "^8.0.3",
     "mongoose": "^8.9.3",
     "typescript-cookie": "^1.0.6"
   }

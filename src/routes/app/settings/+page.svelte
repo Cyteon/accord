@@ -13,6 +13,7 @@
 
     let username = state.user?.username;
     let displayName = state.user?.displayName;
+    let error = "";
 
     onMount(() => {
         // the inputs were empty sometimes
@@ -50,6 +51,30 @@
             body.displayName = displayName;
         }
 
+        if (document.getElementById("avatar")!.files.length > 0) {
+            const file = document.getElementById("avatar")!.files[0];
+
+            if (file.size > 2048 * 1024) {
+                error = "File size must be less than 2MB";
+                return;
+            }
+
+            if (!file.type.startsWith("image/")) {
+                error = "File must be an image";
+                return;
+            }
+
+            const base64 = await new Promise<string>((resolve) => {
+                const reader = new FileReader();
+
+                reader.onload = () => resolve(reader.result as string);
+
+                reader.readAsDataURL(file);
+            });
+
+            body.avatar = base64;
+        }
+
         const res = await fetch("/api/v1/users/@me", {
             method: "PATCH",
             headers: {
@@ -62,12 +87,14 @@
         if (res.ok) {
             state.user = await res.json();
             document.getElementById("saveBtn")!.setAttribute("disabled", "");
+        } else {
+            error = (await res.json()).error;
         }
     }
 
     if (browser) {
         document.addEventListener("input", (e) => {
-            if (username != state.user?.username || displayName != state.user?.displayName) {
+            if (username != state.user?.username || displayName != state.user?.displayName || document.getElementById("avatar")!.files.length > 0) {
                 document.getElementById("saveBtn")!.removeAttribute("disabled");
             } else {
                 document.getElementById("saveBtn")!.setAttribute("disabled", "");
@@ -92,7 +119,7 @@
             {#if view == "Account"}
                 <h1 class="text-3xl font-bold">Account</h1>
 
-                <div class="mt-4 w-64 flex flex-col">
+                <div class="mt-4 w-96 flex flex-col">
                     <label for="username" class="text-xl">Username</label>
                     <input 
                         type="text" 
@@ -118,12 +145,22 @@
                             displayName = displayName.slice(0, 30);
                         }}
                     />
+
+                    <label for=avatar class="text-xl mt-2">Avatar</label>
+                    <input 
+                        type="file" 
+                        accept="image/*" 
+                        id="avatar" 
+                        class="mt-1 file:bg-ctp-mantle file:px-2 file:py-1 file:rounded-md file:border-none file:text-ctp-text" 
+                    />
                 </div>
             {:else if view == "Appearance"}
                 <h1 class="text-3xl font-bold">Appearance</h1>
             {/if}
+
+            <p class="text-ctp-red mb-2 mt-auto">{error}</p>
             
-            <button id="saveBtn" class="transition-color duration-300 unique bg-ctp-green enabled:text-ctp-crust rounded-md p-2 mb-1 mt-auto text-2xl font-semibold disabled:bg-ctp-surface0" disabled on:click={() => updateSettings()}>Save</button>
+            <button id="saveBtn" class="transition-color duration-300 unique bg-ctp-green enabled:text-ctp-crust rounded-md p-2 mb-1 text-2xl font-semibold disabled:bg-ctp-surface0" disabled on:click={() => updateSettings()}>Save</button>
         </div>
     </div>
 </div>
