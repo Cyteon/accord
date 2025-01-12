@@ -3,7 +3,7 @@ import DOMPurify from "dompurify";
 
 export function generateTimeString(date: string): string {
   const obj = new Date(date);
-  const diff = (new Date().getTime() - obj.getTime()) / 1000;
+  const diff = (Date.now() - obj.getTime()) / 1000;
 
   if (Math.floor(diff) == 0) {
     return "just now";
