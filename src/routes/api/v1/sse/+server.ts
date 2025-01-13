@@ -15,20 +15,33 @@ export async function POST({ request, params }) {
   const { channels } = await request.json();
 
   let placesShouldBeIn = [];
+  let erroredAtId;
 
   await Promise.all(
     channels.map(async (id) => {
-      const channel = await Channel.findById(id);
+      let channel;
 
-      if (!channel) {
-        return Response.json({ error: "Channel not found" }, { status: 404 });
+      try {
+        channel = await Channel.findById(id);
+        
+        if (!channel) {
+          erroredAtId = id;
+          return;
+        }
+      } catch (e) {
+        erroredAtId = id;
+        return;
       }
 
-      if (!placesShouldBeIn.includes(channel.placeId)) {
-        placesShouldBeIn.push(channel.placeId);
+      if (!placesShouldBeIn.includes(channel.placeId.toString())) {
+        placesShouldBeIn.push(channel.placeId.toString());
       }
     }),
   );
+
+  if (erroredAtId) {
+    return Response.json({ error: `Channel ${erroredAtId} not found` }, { status: 404 });
+  }
 
   const members = await Member.find({
     userId: user._id,
@@ -41,6 +54,8 @@ export async function POST({ request, params }) {
       { status: 403 },
     );
   }
+
+  console.log(members.length, placesShouldBeIn.length);
 
   if (members.length != placesShouldBeIn.length) {
     return Response.json(
