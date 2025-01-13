@@ -16,7 +16,7 @@ export async function POST({ request, params }) {
 
   if (!invite) {
     // btw, we return text cause will be done on frontent ig? i will fix in future
-    return new Response("Invalid invite", { status: 404 });
+    return Response.json({ error: "Invalid invite" }, { status: 404 });
   }
 
   const existingMembership = await Member.findOne({
@@ -25,13 +25,13 @@ export async function POST({ request, params }) {
   });
 
   if (existingMembership) {
-    return new Response("You are already a member of this server", {
+    return Response.json({ error: "You are already a member of this server" }, {
       status: 409,
     });
   }
 
   if (invite.usesLeft <= 0 && invite.usesLeft !== -1) {
-    return new Response("Invite has expired", { status: 410 });
+    return Response.json({ error: "Invite has expired" }, { status: 410 });
   }
 
   if (invite.usesLeft !== -1) {

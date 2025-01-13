@@ -55,8 +55,6 @@ export async function POST({ request, params }) {
     );
   }
 
-  console.log(members.length, placesShouldBeIn.length);
-
   if (members.length != placesShouldBeIn.length) {
     return Response.json(
       { error: "You cannot all or some access these channels" },

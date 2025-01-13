@@ -21,6 +21,7 @@ export async function GET({ request, params }) {
   let place;
 
   // sneaky trick to be fast fast fast
+  // (i have no idea what i'm doing)
   const channels = await Channel.find({ placeId: id }).populate("placeId");
 
   if (channels.length) {

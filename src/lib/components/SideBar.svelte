@@ -52,7 +52,7 @@
             state.places[json._id] = json;
             showCreatePlaceModal = false;
         } else {
-            joinPlaceError = await res.text();
+            joinPlaceError = (await res.json()).error;
 
             if (joinPlaceError.length > 100) {
                 joinPlaceError = "An error occurred while joining the place.";

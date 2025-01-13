@@ -202,7 +202,7 @@
             
             document?.getElementById("chats")?.scrollTo(0, document?.getElementById("chats")?.scrollHeight);
         } else {
-            sendMessageError = await res.text();
+            sendMessageError = (await res.json()).error;
 
             if (sendMessageError.length > 100) {
                 sendMessageError = "An error occurred while sending the message.";
