@@ -1,7 +1,14 @@
 import Member from "$lib/models/Member";
 import { verifyRequest } from "$lib/api.server.js";
 import { Client } from "minio";
-import { S3_ENDPOINT, S3_PORT, S3_SECURE, S3_SECRET_KEY, S3_ACCESS_KEY, S3_BUCKET } from '$env/static/private';
+import {
+  S3_ENDPOINT,
+  S3_PORT,
+  S3_SECURE,
+  S3_SECRET_KEY,
+  S3_ACCESS_KEY,
+  S3_BUCKET,
+} from "$env/static/private";
 
 const client = new Client({
   endPoint: S3_ENDPOINT,
@@ -9,7 +16,7 @@ const client = new Client({
   useSSL: S3_SECURE === "true",
   accessKey: S3_ACCESS_KEY,
   secretKey: S3_SECRET_KEY,
-})
+});
 
 export async function GET({ request }) {
   const user = await verifyRequest(request);
@@ -71,7 +78,10 @@ export async function PATCH({ request }) {
       return Response.json({ error: "File too large" }, { status: 413 });
     }
 
-    var buf = Buffer.from(avatar.replace(/^data:image\/\w+;base64,/, ""), "base64");
+    var buf = Buffer.from(
+      avatar.replace(/^data:image\/\w+;base64,/, ""),
+      "base64",
+    );
 
     const key = `avatars/${user._id}.png`;
 
@@ -90,6 +100,6 @@ export async function PATCH({ request }) {
 
   const userNoPswd = user.toJSON();
   delete userNoPswd.password;
-  
+
   return Response.json(userNoPswd, { status: 200 });
 }

@@ -23,7 +23,7 @@ export async function POST({ request, params }) {
 
       try {
         channel = await Channel.findById(id);
-        
+
         if (!channel) {
           erroredAtId = id;
           return;
@@ -40,7 +40,10 @@ export async function POST({ request, params }) {
   );
 
   if (erroredAtId) {
-    return Response.json({ error: `Channel ${erroredAtId} not found` }, { status: 404 });
+    return Response.json(
+      { error: `Channel ${erroredAtId} not found` },
+      { status: 404 },
+    );
   }
 
   const members = await Member.find({

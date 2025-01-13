@@ -25,9 +25,12 @@ export async function POST({ request, params }) {
   });
 
   if (existingMembership) {
-    return Response.json({ error: "You are already a member of this server" }, {
-      status: 409,
-    });
+    return Response.json(
+      { error: "You are already a member of this server" },
+      {
+        status: 409,
+      },
+    );
   }
 
   if (invite.usesLeft <= 0 && invite.usesLeft !== -1) {

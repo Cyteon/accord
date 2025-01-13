@@ -79,7 +79,7 @@ export async function PUT({ params, request }) {
         _id: user._id,
         displayName: user.displayName,
         pfpUrl: user.pfpUrl,
-      }
+      },
     },
     { status: 201 },
   );
