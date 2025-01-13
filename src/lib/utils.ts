@@ -37,5 +37,14 @@ export function parseMsg(content: string): string {
   });
 
   let final = DOMPurify.sanitize(marked(cleaned) as string);
+
+  const urlInImg = /<img[^>]+src="([^">]+)"/g;
+
+  if (urlInImg.test(final)) {
+    final = final.replace(urlInImg, (match, url) => {
+      return match.replace(url, `https://corsproxy.io/?url=${url}`);
+    });
+  }
+
   return final;
 }
