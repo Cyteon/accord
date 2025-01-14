@@ -13,14 +13,16 @@
 
     let username = state.user?.username;
     let displayName = state.user?.displayName;
+    let aboutMe = state.user?.aboutMe;
     let error = "";
 
     onMount(() => {
         // the inputs were empty sometimes
         setTimeout(() => {
-            if (!username || !displayName) {
+            if (!username || !displayName || !aboutMe) {
                 username = state.user?.username;
                 displayName = state.user?.displayName;
+                aboutMe = state.user?.aboutMe;
             }
         }, 100);
     });
@@ -49,6 +51,10 @@
 
         if (displayName != state.user?.displayName) {
             body.displayName = displayName;
+        }
+
+        if (aboutMe != (state.user?.aboutMe || "")) {
+            body.aboutMe = aboutMe;
         }
 
         if (document.getElementById("avatar")!.files.length > 0) {
@@ -94,7 +100,12 @@
 
     if (browser) {
         document.addEventListener("input", (e) => {
-            if (username != state.user?.username || displayName != state.user?.displayName || document.getElementById("avatar")!.files.length > 0) {
+            if (
+                username != state.user?.username 
+                || displayName != state.user?.displayName 
+                || aboutMe != (state.user?.aboutMe || "")
+                || document.getElementById("avatar")!.files.length > 0
+            ) {
                 document.getElementById("saveBtn")!.removeAttribute("disabled");
             } else {
                 document.getElementById("saveBtn")!.setAttribute("disabled", "");
@@ -125,7 +136,7 @@
                         type="text" 
                         placeholder="Username..." 
                         id="username" 
-                        class="input text-xl mt-1" 
+                        class="text-xl mt-1" 
                         bind:value={username} 
                         on:input={() => {
                             username = username.toLowerCase()
@@ -139,12 +150,23 @@
                         type="text" 
                         placeholder="Display Name..." 
                         id="displayName" 
-                        class="input text-xl mt-1" 
+                        class="text-xl mt-1" 
                         bind:value={displayName} 
                         on:input={() => {
                             displayName = displayName.slice(0, 30);
                         }}
                     />
+
+                    <label for="aboutMe" class="text-xl mt-2">About Me</label>
+                    <textarea 
+                        placeholder="Write something about you..." 
+                        id="aboutMe" 
+                        class="text-xl mt-1 resize-none" 
+                        bind:value={aboutMe} 
+                        on:input={() => {
+                            aboutMe = aboutMe.slice(0, 200);
+                        }}
+                    ></textarea>
 
                     <label for=avatar class="text-xl mt-2">Avatar</label>
                     <input 

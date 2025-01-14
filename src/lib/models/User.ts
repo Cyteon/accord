@@ -6,6 +6,7 @@ export interface UserType {
   displayName: string;
   username: string;
   password: string;
+  aboutMe?: string;
   pfpUrl?: string;
 }
 
@@ -31,6 +32,11 @@ const UserSchema = new mongoose.Schema<UserType>({
   password: {
     type: String,
     required: true,
+  },
+
+  aboutMe: {
+    type: String,
+    default: "",
   },
 
   pfpUrl: {

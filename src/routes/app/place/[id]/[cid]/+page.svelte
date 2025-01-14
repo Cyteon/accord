@@ -7,7 +7,7 @@
     import type { PlaceType } from "$lib/models/Place";
     import type { ChannelType } from "$lib/models/Channel";
     import type { MessageType } from "$lib/models/Message";
-    import { generateTimeString, parseMsg } from "$lib/utils";
+    import { generateTimeString, parseAboutMe, parseMsg } from "$lib/utils";
     import { onMount, tick, untrack } from "svelte";
     import { source } from "sveltekit-sse";
     import PlaceDropdown from "$lib/components/PlaceDropdown.svelte";
@@ -272,8 +272,8 @@
             </h1>
         </div>
 
-        <div class="flex w-full overflow-y-hidden">
-            <div class="overflow-y-auto w-full" id="chats">
+        <div class="flex w-full overflow-y-hidden h-full">
+            <div class="overflow-y-auto w-full flex flex-col" id="chats">
                 <span class="invisible" id="top"></span>
 
                 {#each channel?.messages as msg, i}
@@ -320,7 +320,7 @@
                     </div>
                 {/each}
 
-                <div class="p-4 sticky bottom-0 w-full bg-ctp-base">
+                <div class="p-4 mt-auto sticky bottom-0 w-full bg-ctp-base">
                     <p class="text-ctp-red">{sendMessageError}</p>
                     <div class="flex w-full">
                         <textarea 
@@ -362,6 +362,9 @@
 
                     <h1 class="text-2xl font-bold mt-4">{openUser.displayName}</h1>
                     <p class="text-ctp-subtext0 text-lg">@{openUser.username}</p>
+
+                    <p class="font-bold mt-4 text-lg">About Me</p>
+                    <p class="break-words prose">{@html parseAboutMe(openUser.aboutMe || "")}</p>
                 </div>
             {/if}
         </div>

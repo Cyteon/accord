@@ -18,7 +18,8 @@ a:hover:not(.unique) {
   @apply border-ctp-surface0;
 }
 
-input {
+input,
+textarea {
   border-width: 1px;
   border-radius: 0.375rem;
   padding: 0.5rem;

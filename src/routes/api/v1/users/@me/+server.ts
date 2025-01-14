@@ -55,9 +55,9 @@ export async function PATCH({ request }) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { username, displayName, avatar } = await request.json();
+  const { username, displayName, aboutMe, avatar } = await request.json();
 
-  if (!username && !displayName && !avatar) {
+  if (!username && !displayName && !avatar && !aboutMe) {
     return Response.json({ error: "No fields to update" }, { status: 400 });
   }
 
@@ -67,6 +67,10 @@ export async function PATCH({ request }) {
 
   if (displayName) {
     user.displayName = displayName;
+  }
+
+  if (aboutMe) {
+    user.aboutMe = aboutMe;
   }
 
   if (avatar) {
