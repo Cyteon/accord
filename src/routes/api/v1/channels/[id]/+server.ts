@@ -40,7 +40,7 @@ export async function GET({ request, params, url }) {
     .limit(50)
     .skip(offset)
     .sort({ createdAt: -1 })
-    .populate({ path: "authorId", select: "_id displayName pfpUrl" });
+    .populate({ path: "authorId", select: "_id username displayName pfpUrl" });
 
   messages = messages.toReversed();
 

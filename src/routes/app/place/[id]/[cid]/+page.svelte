@@ -1,7 +1,7 @@
 <script lang="ts">
     import SideBar from "$lib/components/SideBar.svelte";
     import { getCookie } from "typescript-cookie";
-    import { Hash, Send, Plus } from "lucide-svelte";
+    import { Hash, Send, Plus, X } from "lucide-svelte";
     import { browser } from "$app/environment";
     import state_ from "$lib/state.svelte";
     import type { PlaceType } from "$lib/models/Place";
@@ -30,9 +30,6 @@
     let messageContent = $state("");
     let sendMessageError = $state("");
 
-    let showServerDropDown = $state(false);
-    let showInviteModal = $state(false);
-    let inviteMaxUses = $state(-1);
     let inviteCode: {
         code: string,
         maxUses: number,
@@ -41,6 +38,8 @@
     let showCreateChannelModal = $state(false);
     let channelName = $state("");
     let createChannelError = $state("");
+
+    let openUser = $state(null);
 
     let offset = 0;
 
@@ -265,40 +264,53 @@
         </div>
     </div>
     
-    <div class="w-full flex flex-col max-h-[calc(100vh-3rem)]">
+    <div class="w-full flex flex-col">
         <div class="bg-ctp-mantle w-full h-fit py-[0.3rem] px-4 border-b">
             <h1 class="text-ctp-subtext0 text-lg font-bold flex">
                 <Hash width={24} height={24} class="my-auto text-ctp-subtext0" />
                 <span class="ml-1 mb-1.5">{place?.channels?.find(c => c._id.toString() == data.cid)?.name}</span>
             </h1>
         </div>
-        
-        <div class="flex flex-col h-full">
-            <div class="overflow-y-auto h-screen" id="chats">
+
+        <div class="flex w-full overflow-y-hidden">
+            <div class="overflow-y-auto w-full" id="chats">
                 <span class="invisible" id="top"></span>
 
                 {#each channel?.messages as msg, i}
                     {@const group = (msg.authorId?._id == channel?.messages![i-1]?.authorId?._id && new Date(msg.createdAt).getTime() - new Date(channel?.messages![i-1]?.createdAt).getTime() < 60000)}
 
-                    <div class={`flex ${group ? "" : "mt-4 p-1"} px-4 hover:bg-ctp-mantle/80 transition-color duration-300 group`}>
+                    <div class={`flex ${group ? "pt-1" : "mt-4 pt-1"} hover:bg-ctp-mantle/80 transition-color duration-300 group`}>
                         {#if !group}
-                            <img src={msg.authorId?.pfpUrl || "https://placehold.co/200"} class="rounded-full w-14 h-14 mr-2" />
+                            <img src={msg.authorId?.pfpUrl || "https://placehold.co/200"} class="rounded-md w-12 h-12 mr-2 ml-6" />
                         {/if}
 
-                        <div class="flex flex-col">
+                        <div class="flex flex-col mt-[-7px]">
                             {#if !group}
                                 <div class="flex">
-                                    <p class="font-bold text-2xl leading-none truncate max-w-96">{msg.authorId?.displayName || "[deleted user]"}</p>
-                                    <p class="text-ctp-subtext0 mt-0.5 ml-2">{generateTimeString(msg.createdAt)}</p>
+                                    <button 
+                                        class="font-bold text-2xl truncate max-w-96 enabled:hover:underline"
+                                        disabled={!msg.authorId?.displayName}
+                                        onclick={() => {
+                                            if (!openUser || openUser._id != msg.authorId?._id) {
+                                                openUser = msg.authorId;
+                                            } else {
+                                                openUser = null;
+                                            }
+                                        }}
+                                    >
+                                        {msg.authorId?.displayName || "[deleted user]"}
+                                    </button>
+                                    <p class="text-ctp-subtext0 mt-1.5 ml-2">{generateTimeString(msg.createdAt)}</p>
                                 </div>
                             {/if}
+                            
                             <div class="flex">
                                 {#if group}
-                                    <p class="text-ctp-subtext0 text-[0.75rem] w-[3.2rem] my-auto mr-3 invisible group-hover:visible">{new Date(msg.createdAt).toLocaleTimeString("en-NO", { hour: "2-digit", minute: "2-digit" })}</p>
+                                    <p class="text-ctp-subtext0 text-[0.8rem] w-[5rem] text-center mt-1.5 invisible group-hover:visible">{new Date(msg.createdAt).toLocaleTimeString("en-NO", { hour: "2-digit", minute: "2-digit" })}</p>
                                 {/if}
 
                                 <p 
-                                    class="text-xl mb-0.5 prose"
+                                    class="text-xl prose"
                                     style="overflow-wrap: break-word; word-break: break-word;"
                                 >
                                     {@html parseMsg(msg.content)}
@@ -307,36 +319,51 @@
                         </div>
                     </div>
                 {/each}
-            </div>
 
-            <div class="mt-auto p-4 pt-3">
-                <p class="text-ctp-red">{sendMessageError}</p>
-                <div class="flex w-full">
-                    <textarea 
-                        class="w-full p-2 border bg-ctp-mantle rounded-md resize-none max-h-32"
-                        placeholder="Message" bind:value={messageContent} 
-                        id="messageInput"
-                        rows={1}
-                        oninput={async (e) => {
-                            e.target.style.height = "auto";
-                            e.target.style.height = `${e.target.scrollHeight}px`;
-
-                            await tick();
-
-                            document.getElementById("chats")!.scrollTo(0, document.getElementById("chats")?.scrollHeight || 0);
-                        }}
-                        onkeydown={e => {
-                            if (e.key == "Enter" && !e.shiftKey) {
-                                e.preventDefault();
-                                sendMessage();
-                            }
-                        }}
-                    ></textarea>
-                    <button class="bg-ctp-mantle hover:text-ctp-blue transition-all duration-300 border rounded-md ml-2 p-2 self-end" onclick={sendMessage}>
-                        <Send class="size-full" />
-                    </button>
+                <div class="p-4 sticky bottom-0 w-full bg-ctp-base">
+                    <p class="text-ctp-red">{sendMessageError}</p>
+                    <div class="flex w-full">
+                        <textarea 
+                            class="w-full p-2 border bg-ctp-mantle rounded-md resize-none max-h-32"
+                            placeholder="Message" bind:value={messageContent} 
+                            id="messageInput"
+                            rows={1}
+                            oninput={async (e) => {
+                                e.target.style.height = "auto";
+                                e.target.style.height = `${e.target.scrollHeight}px`;
+        
+                                await tick();
+        
+                                document.getElementById("chats")!.scrollTo(0, document.getElementById("chats")?.scrollHeight || 0);
+                            }}
+                            onkeydown={e => {
+                                if (e.key == "Enter" && !e.shiftKey) {
+                                    e.preventDefault();
+                                    sendMessage();
+                                }
+                            }}
+                        ></textarea>
+                        <button class="bg-ctp-mantle hover:text-ctp-blue transition-all duration-300 border rounded-md ml-2 p-2 self-end" onclick={sendMessage}>
+                            <Send class="size-full" />
+                        </button>
+                    </div>
                 </div>
             </div>
+
+            {#if openUser}
+                <div class="p-4 border-l bg-ctp-mantle flex flex-col w-96">
+                    <button class="ml-auto hover:text-ctp-red transition-all duration-300" onclick={() => openUser = null}>
+                        <X width={16} />
+                    </button>
+
+                    <div class="flex mt-4 justify-center">
+                        <img src={openUser.pfpUrl} alt="avatarBig" class="rounded-md w-48 h-48" />
+                    </div>
+
+                    <h1 class="text-2xl font-bold mt-4">{openUser.displayName}</h1>
+                    <p class="text-ctp-subtext0 text-lg">@{openUser.username}</p>
+                </div>
+            {/if}
         </div>
     </div>
 

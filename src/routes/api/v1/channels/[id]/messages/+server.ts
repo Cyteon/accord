@@ -64,6 +64,7 @@ export async function PUT({ params, request }) {
             authorId: {
               _id: user._id,
               displayName: user.displayName,
+              username: user.username,
               pfpUrl: user.pfpUrl,
             },
           }),
@@ -78,6 +79,7 @@ export async function PUT({ params, request }) {
       authorId: {
         _id: user._id,
         displayName: user.displayName,
+        username: user.username,
         pfpUrl: user.pfpUrl,
       },
     },

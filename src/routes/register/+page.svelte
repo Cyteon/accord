@@ -53,9 +53,7 @@
         if (res.ok) {
             const data = await res.json();
 
-            setCookie("token", data.token, {
-                expires: 1000 * 60 * 60 * 24 * 28,
-            });
+            setCookie("token", data.token, { expires: 28 });
 
             state.user = data.user;
 
