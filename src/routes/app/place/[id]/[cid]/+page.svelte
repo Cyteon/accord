@@ -281,7 +281,7 @@
 
                     <div class={`flex ${group ? "pt-1" : "mt-4 pt-1"} hover:bg-ctp-mantle/80 transition-color duration-300 group`}>
                         {#if !group}
-                            <img src={msg.authorId?.pfpUrl || "https://placehold.co/200"} class="rounded-md w-12 h-12 mr-2 ml-6" />
+                            <img src={msg.authorId?.pfpUrl} class="rounded-md w-12 h-12 mr-4 ml-4" />
                         {/if}
 
                         <div class="flex flex-col mt-[-7px]">
