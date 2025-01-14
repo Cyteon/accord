@@ -364,7 +364,7 @@
                     <p class="text-ctp-subtext0 text-lg">@{openUser.username}</p>
 
                     <p class="font-bold mt-4 text-lg">About Me</p>
-                    <p class="break-words prose">{@html parseAboutMe(openUser.aboutMe || "")}</p>
+                    <p class="break-words prose">{@html parseAboutMe(openUser.aboutMe || "None :(")}</p>
                 </div>
             {/if}
         </div>
