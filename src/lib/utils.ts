@@ -46,6 +46,8 @@ export function parseMsg(content: string): string {
     });
   }
 
+  final = final.replace("<img", '<img id="msg-img"');
+
   return final;
 }
 
@@ -73,5 +75,9 @@ export function parseAboutMe(content: string): string {
     },
   };
 
-  return DOMPurify.sanitize(marked.parser(lexer.lex(cleaned)) as string);
+  
+
+  return DOMPurify.sanitize(marked.parser(lexer.lex(cleaned)) as string, {
+    FORBID_TAGS: ["img"],
+  });
 }

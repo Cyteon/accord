@@ -49,3 +49,9 @@ pre {
   padding: 0.5rem 1rem 0.3rem 1rem !important;
   margin: 0.5rem 0 !important;
 }
+
+#msg-img {
+  max-width: 80%;
+  height: auto;
+  margin: 0.5rem 0;
+}
