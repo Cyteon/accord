@@ -294,7 +294,7 @@
                             {/if}
                             <div class="flex">
                                 {#if group}
-                                    <p class="text-ctp-subtext0 text-[0.78rem] w-[3.2rem] text-center my-auto mr-3 invisible group-hover:visible">{new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>
+                                    <p class="text-ctp-subtext0 text-[0.75rem] w-[3.2rem] my-auto mr-3 invisible group-hover:visible">{new Date(msg.createdAt).toLocaleTimeString("en-NO", { hour: "2-digit", minute: "2-digit" })}</p>
                                 {/if}
 
                                 <p 
