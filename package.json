@@ -38,6 +38,7 @@
     "marked": "^15.0.6",
     "minio": "^8.0.3",
     "mongoose": "^8.9.3",
+    "sharp": "^0.33.5",
     "typescript-cookie": "^1.0.6"
   }
 }

@@ -4,6 +4,7 @@ import User from "$lib/models/User";
 
 import { verifyRequest } from "$lib/api.server.js";
 import { Client } from "minio";
+import sharp from "sharp";
 import {
   S3_ENDPOINT,
   S3_PORT,
@@ -105,7 +106,7 @@ export async function PATCH({ request }) {
       "base64",
     );
 
-    const key = `avatars/${user._id}.png`;
+    const key = `avatars/${user._id}.webp`;
 
     try {
       await client.removeObject(S3_BUCKET, key);
@@ -113,7 +114,9 @@ export async function PATCH({ request }) {
       console.log(e);
     }
 
-    await client.putObject(S3_BUCKET, key, buf, buf.length);
+    const webpBuf = await sharp(buf).webp().toBuffer();
+
+    await client.putObject(S3_BUCKET, key, webpBuf, webpBuf.length);
 
     user.pfpUrl = `${S3_SECURE === "true" ? "https" : "http"}://${S3_ENDPOINT}:${S3_PORT}/${S3_BUCKET}/${key}`;
   }
