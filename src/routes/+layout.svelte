@@ -26,7 +26,7 @@
 					state.places[place._id.toString()] = place;
 				});
 			} else {
-				if (window.location.pathname === '/app') {
+				if (window.location.pathname.startsWith("/app")) {
 					window.location.href = '/login';
 				}
 			}

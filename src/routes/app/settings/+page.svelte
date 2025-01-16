@@ -42,6 +42,23 @@
         window.location.href = "/";
     }
 
+    async function delete_() {
+        const res = await fetch("/api/v1/users/@me", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${getCookie("token")}`
+            }
+        });
+
+        if (res.ok) {
+            removeCookie("token");
+            window.location.href = "/";
+        } else {
+            error = (await res.json()).error;
+        }
+    }
+
     async function updateSettings() {
         const body = {};
 
@@ -123,7 +140,8 @@
                 <button class={`svb mt-2 ${view == v ? "bg-ctp-surface0/30" : "hover:bg-ctp-surface0/25"}`} on:click={() => view = v}>{v}</button>
             {/each}
 
-            <button class="svb hover:bg-ctp-surface0/25 text-ctp-red mt-auto" on:click={() => logOut()}>Logout</button>
+            <button class="svb hover:bg-ctp-surface0/25 text-ctp-red mt-auto" on:click={() => view = "Delete"}>Delete</button>
+            <button class="svb hover:bg-ctp-surface0/25 text-ctp-red" on:click={() => logOut()}>Logout</button>
         </div>
 
         <div class="bg-ctp-mantle border ml-2 md:ml-8 p-2 px-4 rounded-md w-full flex flex-col">
@@ -178,6 +196,10 @@
                 </div>
             {:else if view == "Appearance"}
                 <h1 class="text-3xl font-bold">Appearance</h1>
+            {:else if view == "Delete"}
+                <h1 class="text-3xl font-bold">Delete Account</h1>
+                <p class="mt-4">Are you sure you want to delete your account?</p>
+                <button class="bg-ctp-red text-ctp-crust mt-2 p-2 rounded-md text-xl font-semibold max-w-96" on:click={() => delete_()}>Delete</button>
             {/if}
 
             <p class="text-ctp-red mb-2 mt-auto">{error}</p>

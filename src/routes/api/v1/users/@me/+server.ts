@@ -1,4 +1,7 @@
 import Member from "$lib/models/Member";
+import Token from "$lib/models/Token";
+import User from "$lib/models/User";
+
 import { verifyRequest } from "$lib/api.server.js";
 import { Client } from "minio";
 import {
@@ -46,6 +49,21 @@ export async function GET({ request }) {
       status: 200,
     },
   );
+}
+
+export async function DELETE({ request }) {
+  const user = await verifyRequest(request);
+
+  if (!user) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  await Token.deleteMany({ userId: user._id });
+  await Member.deleteMany({ userId: user._id });
+
+  await User.findByIdAndDelete(user._id);
+
+  return Response.json({}, { status: 204 });
 }
 
 export async function PATCH({ request }) {
