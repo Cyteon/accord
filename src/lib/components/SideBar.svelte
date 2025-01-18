@@ -143,7 +143,6 @@
         display: flex;
         padding: .8rem;
         border-radius: 0.5rem;
-        transition: all 300ms;
         width: 4rem;
         height: 4rem;
 

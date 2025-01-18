@@ -1,4 +1,3 @@
-// TODO: implement this on frontend
 import Member from "$lib/models/Member";
 import { verifyRequest } from "$lib/api.server";
 

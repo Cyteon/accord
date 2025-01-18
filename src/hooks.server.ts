@@ -6,15 +6,14 @@ mongoose.connect(MONGODB_URI);
 // to init schemas
 import User from "$lib/models/User";
 import Place from "$lib/models/Place";
+import Token from "$lib/models/Token";
 
 import { type Handle, type RequestEvent } from "@sveltejs/kit";
 import {
-  RateLimiter,
   type RateLimiterPlugin,
   type Rate,
   RetryAfterRateLimiter,
 } from "sveltekit-rate-limiter/server";
-import Token from "$lib/models/Token";
 
 class TokenRateLimiter implements RateLimiterPlugin {
   readonly rate: Rate | Rate[];
@@ -99,8 +98,10 @@ export const handle: Handle = async ({ event, resolve }) => {
     const status = await limiter.limiter.check(event);
 
     if (status.limited) {
-      return new Response(
-        `Rate limit exceeded. Try again in ${status.retryAfter} seconds.`,
+      return Response.json(
+        {
+          error: `Rate limit exceeded. Try again in ${status.retryAfter} seconds.`,
+        },
         {
           status: 429,
           headers: {

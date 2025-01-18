@@ -1,4 +1,4 @@
-import type { UserType } from "./models/User";
+import type { UserType, PartialUser } from "./models/User";
 import type { PlaceType } from "./models/Place";
 import type { ChannelType } from "./models/Channel";
 
@@ -10,11 +10,17 @@ export interface StateType {
       channels?: ChannelType[];
     }
   >;
+  relations: {
+    pendingIn?: PartialUser[];
+    pendingOut?: PartialUser[];
+    friends?: PartialUser[];
+  };
 }
 
 const state: StateType = $state({
   user: null,
   places: {},
+  relations: {},
 });
 
 export default state;

@@ -1,5 +1,13 @@
 import mongoose from "mongoose";
 
+export interface PartialUser {
+  _id: mongoose.Types.ObjectId;
+  displayName: string;
+  username: string;
+  aboutMe: string;
+  pfpUrl: string;
+}
+
 export interface UserType {
   _id: mongoose.Types.ObjectId;
   email: string;

@@ -53,7 +53,7 @@
 </script>
 
 <div class="relative">
-    <button class="px-5 py-2 border-b text-xl font-bold hover:bg-ctp-surface0/25 transition-color duration-300 w-full text-left" onclick={() => showServerDropDown = !showServerDropDown}>
+    <button class="px-5 py-2 border-b text-xl font-bold hover:bg-ctp-surface0/25 w-full text-left" onclick={() => showServerDropDown = !showServerDropDown}>
         <span class="block my-auto truncate">{place?.name}</span>
     </button>
 

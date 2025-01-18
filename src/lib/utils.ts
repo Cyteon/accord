@@ -75,8 +75,6 @@ export function parseAboutMe(content: string): string {
     },
   };
 
-  
-
   return DOMPurify.sanitize(marked.parser(lexer.lex(cleaned)) as string, {
     FORBID_TAGS: ["img"],
   });

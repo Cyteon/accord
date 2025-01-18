@@ -1,8 +1,9 @@
 import Member from "$lib/models/Member";
 import Token from "$lib/models/Token";
 import User from "$lib/models/User";
+import Relation, { RelationStatus } from "$lib/models/Relation";
 
-import { verifyRequest } from "$lib/api.server.js";
+import { verifyRequest } from "$lib/api.server";
 import { Client } from "minio";
 import sharp from "sharp";
 import {
@@ -39,12 +40,82 @@ export async function GET({ request }) {
   const userNoPswd = user.toJSON();
   delete userNoPswd.password;
 
-  const places = await Member.find({ userId: user._id }).populate("placeId");
+  const [places, relations] = await Promise.all([
+    Member.find({ userId: user._id }).populate("placeId"),
+    Relation.find({ $or: [{ userId: user._id }, { targetId: user._id }] }),
+  ]);
+
+  const friendReqs = relations.filter(
+    (relation) => relation.status === RelationStatus.PENDING,
+  );
+
+  const friends = relations.filter(
+    // just get friend relation me -> other, as other -> me would be exactly same
+    (relation) =>
+      relation.status === RelationStatus.FRIENDS &&
+      relation.userId.toString() === user._id.toString(),
+  );
+
+  let friendReqsNew = [];
+  let friendsNew = [];
+
+  await Promise.all([
+    Promise.all(
+      friendReqs.map(async (req) => {
+        if (req.userId.toString() === user._id.toString()) {
+          const user = await User.findById(req.targetId);
+
+          friendReqsNew.push({
+            userId: req.userId,
+            targetId: {
+              _id: user._id,
+              username: user.username,
+              displayName: user.displayName,
+              pfpUrl: user.pfpUrl,
+            },
+            status: req.status,
+          });
+        } else {
+          const user = await User.findById(req.userId);
+
+          friendReqsNew.push({
+            userId: {
+              _id: user._id,
+              username: user.username,
+              displayName: user.displayName,
+              pfpUrl: user.pfpUrl,
+            },
+            targetId: req.targetId,
+            status: req.status,
+          });
+        }
+      }),
+    ),
+
+    Promise.all(
+      friends.map(async (friend) => {
+        const user = await User.findById(friend.targetId);
+
+        friendsNew.push({
+          userId: friend.userId,
+          targetId: {
+            _id: user._id,
+            username: user.username,
+            displayName: user.displayName,
+            pfpUrl: user.pfpUrl,
+          },
+          status: friend.status,
+        });
+      }),
+    ),
+  ]);
 
   return Response.json(
     {
       user: userNoPswd,
       places: places.map((place) => place.placeId),
+      friendReqs: friendReqsNew,
+      friends: friendsNew,
     },
     {
       status: 200,

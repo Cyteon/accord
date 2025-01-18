@@ -104,7 +104,7 @@
 
         <div class="overflow-y-auto h-[calc(100%-7rem)]">
             {#each place?.channels! as channel}
-                <div class="px-2 py-1 rounded-md mx-2 mt-2 hover:bg-ctp-surface0/25 transition-color duration-300">
+                <div class="px-2 py-1 rounded-md mx-2 mt-2 hover:bg-ctp-surface0/25">
                     <a href={`/app/place/${data.id}/${channel._id}`} class="unique flex">
                         <Hash width={16} height={16} class="my-auto text-ctp-subtext0" />
                         <span class="mb-0.5 ml-1 text-lg truncate">{channel.name}</span>

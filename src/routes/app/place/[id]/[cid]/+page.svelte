@@ -236,6 +236,7 @@
             }
         }
     }
+    
     // is someone actually reading all this?
 </script>
 
@@ -254,7 +255,7 @@
 
         <div class="overflow-y-auto h-[calc(100%-7rem)]">
             {#each place?.channels! as channel}
-                <div class={`px-2 py-1 rounded-md mx-2 mt-2 ${data.cid == channel._id.toString() ? "bg-ctp-surface0/50" : "hover:bg-ctp-surface0/25"} transition-color duration-300`}>
+                <div class={`px-2 py-1 rounded-md mx-2 mt-2 ${data.cid == channel._id.toString() ? "bg-ctp-surface0/50" : "hover:bg-ctp-surface0/25"}`}>
                     <a href={`/app/place/${data.id}/${channel._id}`} class="unique flex">
                         <Hash width={16} height={16} class="my-auto text-ctp-subtext0" />
                         <span class="mb-0.5 ml-1 text-lg truncate">{channel.name}</span>
@@ -279,7 +280,7 @@
                 {#each channel?.messages as msg, i}
                     {@const group = (msg.authorId?._id == channel?.messages![i-1]?.authorId?._id && new Date(msg.createdAt).getTime() - new Date(channel?.messages![i-1]?.createdAt).getTime() < 60000)}
 
-                    <div class={`flex ${group ? "pt-1" : "mt-4 pt-1"} hover:bg-ctp-mantle/80 transition-color duration-300 group`}>
+                    <div class={`flex ${group ? "pt-1" : "mt-4 pt-1"} hover:bg-ctp-mantle/80 group`}>
                         {#if !group}
                             <img src={msg.authorId?.pfpUrl || "https://placehold.co/200"} class="rounded-md w-12 h-12 mr-4 ml-4" />
                         {/if}
@@ -343,7 +344,7 @@
                                 }
                             }}
                         ></textarea>
-                        <button class="bg-ctp-mantle hover:text-ctp-blue transition-all duration-300 border rounded-md ml-2 p-2 self-end" onclick={sendMessage}>
+                        <button class="bg-ctp-mantle hover:text-ctp-blue border rounded-md ml-2 p-2 self-end" onclick={sendMessage}>
                             <Send class="size-full" />
                         </button>
                     </div>
@@ -352,7 +353,7 @@
 
             {#if openUser}
                 <div class="p-4 border-l bg-ctp-mantle flex flex-col w-96">
-                    <button class="ml-auto hover:text-ctp-red transition-all duration-300" onclick={() => openUser = null}>
+                    <button class="ml-auto hover:text-ctp-red" onclick={() => openUser = null}>
                         <X width={16} />
                     </button>
 
