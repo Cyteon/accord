@@ -102,10 +102,12 @@
     <div class="w-full h-full flex flex-col">
         {#if currentView === "friends"}
             <div class="bg-ctp-mantle w-full h-fit border-b p-2 flex">
+                <!--
                 <button 
                     class={`change-view-btn-sm ${currentFriendView === "online" ? "bg-ctp-surface0/25" : "hover:bg-ctp-surface0/20"}`}
                     on:click={() => currentFriendView = "online"}
                 >Online</button>
+                -->
 
                 <button 
                     class={`change-view-btn-sm ml-2 ${currentFriendView === "all" ? "bg-ctp-surface0/25" : "hover:bg-ctp-surface0/20"}`}

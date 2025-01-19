@@ -11,6 +11,7 @@
     import { onMount, tick, untrack } from "svelte";
     import { source } from "sveltekit-sse";
     import PlaceDropdown from "$lib/components/PlaceDropdown.svelte";
+  import { RelationStatus } from "$lib/models/Relation";
 
     let { data }: { data: { id: string, cid: string } } = $props();
     let lastCID = data.cid;
@@ -236,6 +237,42 @@
             }
         }
     }
+
+    async function addFriend(id: string) {
+        const res = await fetch(`/api/v1/users/${id}/friend`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${getCookie("token")}`
+            }
+        });
+
+        if (res.ok) {
+            const json = await res.json();
+            
+            if (json.status == RelationStatus.PENDING) {
+                state_.relations.pendingOut?.push(json);
+            } else {
+                state_.relations.friends?.push(json);
+            }
+        }
+    }
+
+    async function removeFriend(id: string) {
+        const res = await fetch(`/api/v1/users/${id}/friend`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${getCookie("token")}`
+            }
+        });
+
+        if (res.ok) {
+            state_.relations.pendingIn = state_.relations.pendingIn?.filter((relation) => relation.userId._id !== id);
+            state_.relations.pendingOut = state_.relations.pendingOut?.filter((relation) => relation.targetId._id !== id);
+            state_.relations.friends = state_.relations.friends?.filter((relation) => relation.targetId._id !== id);
+        }
+    }
     
     // is someone actually reading all this?
 </script>
@@ -366,6 +403,22 @@
 
                     <p class="font-bold mt-4 text-lg">About Me</p>
                     <p class="break-words prose">{@html parseAboutMe(openUser.aboutMe || "None :(")}</p>
+
+                    {#if state_.user?._id != openUser._id}
+                        {#if state_.relations.friends?.find(f => f.targetId._id == openUser._id)}
+                            <button class="bg-ctp-red text-ctp-crust w-full p-2 rounded-md mt-4" onclick={() => removeFriend(openUser._id)}>
+                                Remove Friend
+                            </button>
+                        {:else if state_.relations.pendingOut?.find(f => f.targetId._id == openUser._id)}
+                            <button class="bg-ctp-yellow text-ctp-crust w-full p-2 rounded-md mt-4" onclick={() => removeFriend(openUser._id)}>
+                                Cancel Request
+                            </button>
+                        {:else}
+                            <button class="bg-ctp-green text-ctp-crust w-full p-2 rounded-md mt-4" onclick={() => addFriend(openUser._id)}>
+                                {state_.relations.pendingIn?.find(f => f.userId._id == openUser._id) ? "Accept Request" : "Add Friend"}
+                            </button>
+                        {/if}
+                    {/if}
                 </div>
             {/if}
         </div>
