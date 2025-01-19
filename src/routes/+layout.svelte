@@ -4,9 +4,15 @@
 	import state from '$lib/state.svelte';
 	import { onMount } from 'svelte';
   	import type { PlaceType } from '$lib/models/Place';
-  import { RelationStatus } from '$lib/models/Relation';
+  	import { RelationStatus } from '$lib/models/Relation';
+  	import { browser } from '$app/environment';
 
 	let { children } = $props();
+
+	if (browser) {
+		document.body.className = `ctp-${localStorage.getItem('theme') || 'mocha'}`;
+	}
+
 
 	onMount(async () => {
 		let cookie = getCookie('token');

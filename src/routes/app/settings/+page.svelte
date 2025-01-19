@@ -1,12 +1,12 @@
 <script lang="ts">
     import { removeCookie, getCookie } from "typescript-cookie";
     import state from "$lib/state.svelte";
-  import { browser } from "$app/environment";
-  import { onMount } from "svelte";
+    import { browser } from "$app/environment";
+    import { onMount, tick } from "svelte";
 
     const views = [
         "Account",
-        //"Appearance",
+        "Appearance",
     ]
 
     let view = "Account";
@@ -15,6 +15,14 @@
     let displayName = state.user?.displayName;
     let aboutMe = state.user?.aboutMe;
     let error = "";
+
+    let theme: "latte" | "frappe" | "macchiato" | "mocha" = "mocha";
+    let themeSelect: typeof theme = theme;
+
+    if (browser) {
+        theme = localStorage.getItem("theme") as typeof theme || "mocha";
+        themeSelect = theme;
+    }
 
     onMount(() => {
         // the inputs were empty sometimes
@@ -61,6 +69,19 @@
 
     async function updateSettings() {
         const body = {};
+
+        if (
+            username == state.user?.username 
+            && displayName == state.user?.displayName 
+            && aboutMe == (state.user?.aboutMe || "")
+            && document.getElementById("avatar")?.files.length || 0 == 0
+            && theme != themeSelect
+        ) {
+            localStorage.setItem("theme", themeSelect);
+            theme = themeSelect;
+            document.getElementById("saveBtn")!.setAttribute("disabled", "");
+            return;
+        }
 
         if (username != state.user?.username) {
             body.username = username;
@@ -116,12 +137,15 @@
     }
 
     if (browser) {
-        document.addEventListener("input", (e) => {
+        document.addEventListener("input", async () => {
+            await tick();
+
             if (
                 username != state.user?.username 
                 || displayName != state.user?.displayName 
                 || aboutMe != (state.user?.aboutMe || "")
-                || document.getElementById("avatar")!.files.length > 0
+                || document.getElementById("avatar")?.files.length > 0
+                || theme != themeSelect
             ) {
                 document.getElementById("saveBtn")!.removeAttribute("disabled");
             } else {
@@ -196,6 +220,21 @@
                 </div>
             {:else if view == "Appearance"}
                 <h1 class="text-3xl font-bold">Appearance</h1>
+
+                <label for="theme" class="text-xl mt-4">Theme</label>
+                <select 
+                    class="mt-1 text-xl w-96 bg-ctp-crust p-2 border rounded-md" 
+                    id="theme"
+                    bind:value={themeSelect}
+                    on:change={() => {
+                        document.body.className = `ctp-${themeSelect}`;
+                    }}
+                >
+                    <option value="latte">Latte</option>
+                    <option value="frappe">Frappe</option>
+                    <option value="macchiato">Macchiato</option>
+                    <option value="mocha">Mocha</option>
+                </select>
             {:else if view == "Delete"}
                 <h1 class="text-3xl font-bold">Delete Account</h1>
                 <p class="mt-4">Are you sure you want to delete your account?</p>

@@ -57,9 +57,15 @@ export default {
     },
   },
 
+  safelist: [
+    "ctp-latte",
+    "ctp-frappe",
+    "ctp-macchiato",
+    "ctp-mocha",
+  ],
+
   plugins: [
     catppuccin({
-      defaultFlavour: "mocha",
       prefix: "ctp",
     }),
     typography,
