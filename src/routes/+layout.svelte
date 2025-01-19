@@ -13,7 +13,6 @@
 		document.body.className = `ctp-${localStorage.getItem('theme') || 'mocha'}`;
 	}
 
-
 	onMount(async () => {
 		let cookie = getCookie('token');
 

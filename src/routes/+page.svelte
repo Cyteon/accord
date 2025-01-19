@@ -42,7 +42,7 @@
             <ExternalLink class={`my-auto ${getStartedHovered ? "w-5 h-5 ml-2" : "w-0 h-0"}`} />
         </a>
         
-        <div class="flex flex-col mt-24">
+        <div class="flex flex-col mt-48 mb-2">
             <div class="grid grid-cols-1 md:grid-cols-2 md:mx-auto px-2 md:w-1/2 gap-4">
                 {#each features as f}
                     <div class="bg-ctp-mantle p-4 rounded-md m-2 flex flex-col border hover:border-ctp-blue duration-700">
